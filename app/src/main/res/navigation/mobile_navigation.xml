@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_shoppinglist">
+
+    <fragment
+        android:id="@+id/navigation_shoppinglist"
+        android:name="it.unipi.di.sam.goshopping.ui.shoppinglist.ShoppingListFragment"
+        android:label="@string/title_shoppinglist"
+        tools:layout="@layout/fragment_shoppinglist" />
+
+    <fragment
+        android:id="@+id/navigation_ficardlist"
+        android:name="it.unipi.di.sam.goshopping.ui.ficardlist.FiCardListFragment"
+        android:label="@string/title_ficardlist"
+        tools:layout="@layout/fragment_ficardlist" />
+
+    <fragment
+        android:id="@+id/navigation_stats"
+        android:name="it.unipi.di.sam.goshopping.ui.stats.StatsFragment"
+        android:label="@string/title_stats"
+        tools:layout="@layout/fragment_stats" />
+</navigation>
