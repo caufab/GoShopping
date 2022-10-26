@@ -7,8 +7,10 @@
     android:background="@color/teal_200"
     tools:context=".ui.ficardlist.FiCardListFragment">
 
+    <!-- TextView to be removed -->
     <TextView
         android:id="@+id/text_ficardlist"
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -20,4 +22,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/ficardlist_lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="20dp"
+        android:paddingBottom="10dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

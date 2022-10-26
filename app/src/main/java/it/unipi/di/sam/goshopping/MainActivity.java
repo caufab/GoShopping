@@ -11,10 +11,14 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import it.unipi.di.sam.goshopping.databinding.ActivityMainBinding;
+import it.unipi.di.sam.goshopping.ui.shoppinglist.DbAccess;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static DbAccess db;
+
     private ActivityMainBinding binding;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

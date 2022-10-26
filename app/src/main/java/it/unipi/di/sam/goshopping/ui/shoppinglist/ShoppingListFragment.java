@@ -2,7 +2,6 @@ package it.unipi.di.sam.goshopping.ui.shoppinglist;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,56 +10,45 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
+import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
 import it.unipi.di.sam.goshopping.databinding.FragmentShoppinglistBinding;
 
 public class ShoppingListFragment extends Fragment {
 
     private FragmentShoppinglistBinding binding;
-    private GsDatabaseHelper gsDb;
-    private SQLiteDatabase db;
+
+
     private Cursor cursor;
-    private List<ShopItem> itemsList;
+ //   private List<ShopItem> itemsList;
 
 
     public void onCreate(Bundle savedInstaceStace) {
         super.onCreate(savedInstaceStace);
-        gsDb = new GsDatabaseHelper(getContext());
-        db = gsDb.getWritableDatabase();
-        cursor = db.query(GsDatabaseHelper.shoppinglist_table_name, null, null, null, null, null, null);
-    //    Log.e("cursor", "just queried");
-        itemsList = new Vector<ShopItem>();
+        MainActivity.db = new DbAccess(getContext());
+        MainActivity.db.createTableINE(DbAccess.shoppinglist_table_name);
 
-        int ids;
-        String s;
-
-        // Filling the itemsList map with cursor values form db
-        while(cursor.moveToNext()) {
-            ids = cursor.getInt(cursor.getColumnIndexOrThrow("_ID"));
-            s = cursor.getString(cursor.getColumnIndexOrThrow("item"));
-            itemsList.add(new ShopItem(ids, s));
-    //        Log.d("cursor", "just put ("+cursor.getInt(cursor.getColumnIndexOrThrow("_ID"))+","+cursor.getString(cursor.getColumnIndexOrThrow("item"))+")");
-        }
-/*
+        MainActivity.db.delete("shopping_items","_ID>0", null);
         ContentValues values = new ContentValues();
-        long newRowId = 1;
-        for(int i=1;i<5;i++) {
-            values.put("item", "food-n"+newRowId);
-            values.put("info", "info-n"+newRowId);
-            newRowId = db.insert(GsDatabaseHelper.shoppinglist_table_name, null, values);
+        for(int i=1;i<30;i++) {
+            values.put("item", "food-n"+i);
+            values.put("info", "info-n"+i);
+            values.put("active_pos", i);
+            MainActivity.db.insert(DbAccess.shoppinglist_table_name, null, values);
         }
-*/
+
+
+
+        try { cursor = MainActivity.db.query(DbAccess.shoppinglist_table_name);
+        } catch (Exception e) {
+            Log.d("cursorException", "e.getMessage: "+e.getMessage() );
+            // exit app somehow
+        }
+
+
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -83,7 +71,7 @@ public class ShoppingListFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rv.setLayoutManager(llm);
 
-        ShoppingListAdapter slA = new ShoppingListAdapter(itemsList);
+        ShoppingListAdapter slA = new ShoppingListAdapter(cursor);
         rv.setAdapter(slA);
 
 
@@ -92,10 +80,7 @@ public class ShoppingListFragment extends Fragment {
 
     @Override
     public void onResume() {
-
         super.onResume();
-
-
     }
 
     @Override
@@ -103,8 +88,7 @@ public class ShoppingListFragment extends Fragment {
         super.onDestroy();
         // close the cursor
         cursor.close();
-        db.close();
-        gsDb.close();
+        MainActivity.db.closeDb();
     }
 
     @Override

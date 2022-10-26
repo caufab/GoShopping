@@ -1,36 +1,56 @@
 package it.unipi.di.sam.goshopping.ui.shoppinglist;
 
-import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 //public class GSDatabase {
 
 
 
 
-public class GsDatabaseHelper extends SQLiteOpenHelper {
+public class DbAccess extends SQLiteOpenHelper {
+
+    // run on background thread!
+    private SQLiteDatabase db = getWritableDatabase();
 
     public static final String DATABASE_NAME = "gs_database.db";
     public static final String shoppinglist_table_name = "shopping_items";
     public static final String ficardlist_table_name = "cards";
     public static final int DATABASE_VERSION = 2;
 
-    public GsDatabaseHelper(Context context) {
+    public DbAccess(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+
+    public void createTableINE(String table_name) {
+        String q;
+        switch(table_name) {
+            case shoppinglist_table_name:
+                q = "CREATE TABLE IF NOT EXISTS "+shoppinglist_table_name+
+                    " (_ID INTEGER PRIMARY KEY, item TEXT, info TEXT, active_pos INTEGER);";
+                break;
+            case ficardlist_table_name:
+                q = "CREATE TABLE IF NOT EXISTS "+ ficardlist_table_name +
+                    " (_ID INTEGER PRIMARY KEY, card TEXT, info TEXT, active_pos INTEGER)";
+            default:
+                return;
+        };
+        db.execSQL(q);
+    }
+
+
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + shoppinglist_table_name + " (_ID INTEGER PRIMARY KEY, item TEXT, info text);");
+        // creating database - TODO: check if i need to create database too
+        // maybe i need to use db parameter
+        createTableINE(shoppinglist_table_name);
+        createTableINE(ficardlist_table_name);
+
     }
 
     @Override
@@ -40,7 +60,35 @@ public class GsDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+shoppinglist_table_name);
         onCreate(db);
     }
+
+
+
+
+
+    public Cursor query(String table) {
+        return db.query(DbAccess.shoppinglist_table_name, null, null, null, null, null, null);
+    }
+
+    public void insert (String table, String nullColumnHack, ContentValues val) {
+        db.insert(shoppinglist_table_name, nullColumnHack, val);
+    }
+
+    public void delete(String table, String whereClause, Object whereArgs) {
+        db.delete(shoppinglist_table_name,whereClause,null);
+    }
+
+    public void update(String table, ContentValues values, String whereClause, String[] whereArgs) {
+        db.update(table, values, whereClause, whereArgs);
+    }
+
+    public void closeDb() {
+        db.close();
+    }
+
 }
+
+
+
 /*
     private DatabaseHelper gsOpenHelper;
 
