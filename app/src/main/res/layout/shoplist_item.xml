@@ -17,6 +17,7 @@
             android:paddingStart="14dp"
             android:paddingEnd="14dp"
             android:paddingTop="5dp"
+
             android:paddingBottom="5dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -25,31 +26,52 @@
             <TextView
                 android:id="@+id/shoppingitem_text"
                 android:layout_width="match_parent"
+                android:gravity="center_vertical"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:gravity="center_vertical"
                 android:layout_alignParentBottom="true"
                 android:textSize="20sp" />
 
-            <!--
-            <com.google.android.material.textfield.TextInputLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/input_item_cl"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="@id/shoppingitem_editText">
-            </com.google.android.material.textfield.TextInputLayout>
-            -->
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="2dp"
+                android:paddingVertical="0dp"
+                android:background="@color/design_default_color_background"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:visibility="invisible">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/shoppingitem_editText"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inputType="text"
-                    android:text="testo di prova"
-                    android:textAppearance="@style/Widget.MaterialComponents.Tooltip"
-                    android:textSize="20sp"
-                    android:visibility="invisible" />
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/rounded_textinput_bg"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="5dp"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/cv_input_item_btn"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:textAppearance="@style/Widget.MaterialComponents.Tooltip"/>
+
+                <Button
+                    android:id="@+id/cv_input_item_btn"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_baseline_add_circle_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
 
-
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </RelativeLayout>

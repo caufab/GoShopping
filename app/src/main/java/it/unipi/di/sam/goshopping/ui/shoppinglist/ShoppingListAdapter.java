@@ -1,16 +1,19 @@
 package it.unipi.di.sam.goshopping.ui.shoppinglist;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -29,20 +32,22 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         int id;
         String item;
         TextInputEditText et;
+        ConstraintLayout cl;
+        Button btn;
 
         public ShoppingListViewHolder(@NonNull View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.card_view);
             tv = (TextView) itemView.findViewById(R.id.shoppingitem_text);
             et = (TextInputEditText) itemView.findViewById(R.id.shoppingitem_editText);
+            cl = (ConstraintLayout) itemView.findViewById(R.id.input_item_cl);
+            btn = (Button) itemView.findViewById(R.id.cv_input_item_btn);
         }
     }
 
-//    List<ShopItem> itemsList;
 
     public ShoppingListAdapter(Cursor c) {
         this.cursor = c;
-        //   this.itemsList = l;
     }
 
     @Override
@@ -60,7 +65,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
 
     int _id,active_pos;
-    String item;
+    String tmp;
     ContentValues conVal = new ContentValues();
 
     @Override
@@ -72,8 +77,8 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             holder.item = cursor.getString(cursor.getColumnIndexOrThrow("item"));
         }
 
-        item = "["+holder.id+"] "+holder.item;
-        holder.tv.setText(item);
+        tmp = "["+holder.id+"] "+holder.item;
+        holder.tv.setText(tmp);
 
 
         holder.cv.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +88,6 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 conVal.put("item", "newval("+holder.id+")");
                 Log.d("database", "updating row: "+holder.id);
                 MainActivity.db.update("shopping_items", conVal,"_ID="+holder.id, null);
-
 
                 cursor=MainActivity.db.query(DbAccess.shoppinglist_table_name);
 
@@ -96,21 +100,31 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             }
         });
 
-/*
+
         holder.cv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 // make me edit it
                 holder.setIsRecyclable(false);
-                holder.et.setText(item);
+                holder.et.setText(holder.item);
                 holder.tv.setVisibility(View.INVISIBLE);
-                holder.et.setVisibility(View.VISIBLE);
+                holder.cl.setVisibility(View.VISIBLE);
+                holder.btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.d("text-example", "Item ["+holder.id+"] new value: "+holder.et.getText());
+                        // TODO: update db
+                        // TODO: notifyItemChanged
+                        holder.cl.setVisibility(View.INVISIBLE);
+                        holder.tv.setVisibility(View.VISIBLE);
+                    }
+                });
 
 
                 return true;
             }
         });
-*/
+
 
     }
 

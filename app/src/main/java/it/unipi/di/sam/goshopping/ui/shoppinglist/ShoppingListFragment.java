@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -40,11 +41,8 @@ public class ShoppingListFragment extends Fragment {
             MainActivity.db.insert(DbAccess.shoppinglist_table_name, null, values);
         }
 
-
-
-        try { cursor = MainActivity.db.query(DbAccess.shoppinglist_table_name);
-        } catch (Exception e) {
-            Log.d("cursorException", "e.getMessage: "+e.getMessage() );
+        try { cursor = MainActivity.db.query(DbAccess.shoppinglist_table_name); }
+        catch (Exception e) { Log.d("cursorException", "e.getMessage: "+e.getMessage() );
             // exit app somehow
         }
 
@@ -62,17 +60,22 @@ public class ShoppingListFragment extends Fragment {
     //    final TextView textView = binding.textShoppinglist;
     //    ShoppingListViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-    //    root.findViewById()
 
 
         RecyclerView rv = (RecyclerView) root.findViewById(R.id.shoppinglist_rv);
         rv.setHasFixedSize(true);
-
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rv.setLayoutManager(llm);
-
         ShoppingListAdapter slA = new ShoppingListAdapter(cursor);
         rv.setAdapter(slA);
+
+        Button addItemBtn = (Button) root.findViewById(R.id.input_item_btn);
+        addItemBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: add new item
+            }
+        });
 
 
         return root;
