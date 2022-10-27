@@ -60,6 +60,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     android:textAppearance="@style/Widget.MaterialComponents.Tooltip"/>
 
+                <!-- use a v (confirm) icon for the button -->
                 <Button
                     android:id="@+id/cv_input_item_btn"
                     android:layout_width="40dp"

@@ -1,4 +1,4 @@
-package it.unipi.di.sam.goshopping.ui.shoppinglist;
+package it.unipi.di.sam.goshopping;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,15 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-//public class GSDatabase {
-
-
-
-
 public class DbAccess extends SQLiteOpenHelper {
 
     // run on background thread!
-    private SQLiteDatabase db = getWritableDatabase();
+
 
     public static final String DATABASE_NAME = "gs_database.db";
     public static final String shoppinglist_table_name = "shopping_items";
@@ -26,31 +21,16 @@ public class DbAccess extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    private SQLiteDatabase db;
 
-    public void createTableINE(String table_name) {
-        String q;
-        switch(table_name) {
-            case shoppinglist_table_name:
-                q = "CREATE TABLE IF NOT EXISTS "+shoppinglist_table_name+
-                    " (_ID INTEGER PRIMARY KEY, item TEXT, info TEXT, active_pos INTEGER);";
-                break;
-            case ficardlist_table_name:
-                q = "CREATE TABLE IF NOT EXISTS "+ ficardlist_table_name +
-                    " (_ID INTEGER PRIMARY KEY, card TEXT, info TEXT, active_pos INTEGER)";
-            default:
-                return;
-        };
-        db.execSQL(q);
-    }
+
 
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // creating database - TODO: check if i need to create database too
-        // maybe i need to use db parameter
+        this.db = db;
         createTableINE(shoppinglist_table_name);
         createTableINE(ficardlist_table_name);
-
     }
 
     @Override
@@ -61,29 +41,59 @@ public class DbAccess extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-
-
+    public void createTableINE(String table_name) {
+        String q;
+        switch(table_name) {
+            case shoppinglist_table_name:
+                q = "CREATE TABLE IF NOT EXISTS "+shoppinglist_table_name+
+                        " (_ID INTEGER PRIMARY KEY, item TEXT, info TEXT, active_pos INTEGER);";
+                break;
+            case ficardlist_table_name:
+                q = "CREATE TABLE IF NOT EXISTS "+ ficardlist_table_name +
+                        " (_ID INTEGER PRIMARY KEY, card TEXT, info TEXT, active_pos INTEGER)";
+            default:
+                return;
+        };
+      //  db = getWritableDatabase();
+        db.execSQL(q);
+    //    db.close();
+    }
 
 
     public Cursor query(String table) {
-        return db.query(DbAccess.shoppinglist_table_name, null, null, null, null, null, null);
+     //   db = getReadableDatabase();
+        Cursor c = db.query(shoppinglist_table_name, null, null, null, null, null, null);
+     //   db.close();
+        return c;
     }
 
     public void insert (String table, String nullColumnHack, ContentValues val) {
-        db.insert(shoppinglist_table_name, nullColumnHack, val);
+      //  Thread Tins = new Thread(new Runnable() {
+      //      @Override
+      //      public void run() {
+           //     try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        db = getReadableDatabase();
+        db.insert(table, nullColumnHack, val);
+    //    db.close();
+       //     }
+
+     //   });
+       // Tins.start();
+
     }
 
     public void delete(String table, String whereClause, Object whereArgs) {
+        db = getWritableDatabase();
         db.delete(shoppinglist_table_name,whereClause,null);
+    //    db.close();
     }
 
     public void update(String table, ContentValues values, String whereClause, String[] whereArgs) {
+        db = getWritableDatabase();
         db.update(table, values, whereClause, whereArgs);
+     //   db.close();
     }
 
-    public void closeDb() {
-        db.close();
-    }
 
 }
 

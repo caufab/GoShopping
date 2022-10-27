@@ -11,7 +11,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import it.unipi.di.sam.goshopping.databinding.ActivityMainBinding;
-import it.unipi.di.sam.goshopping.ui.shoppinglist.DbAccess;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        db = new DbAccess(this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

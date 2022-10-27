@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_shoppinglist"
-        android:name="it.unipi.di.sam.goshopping.ui.shoppinglist.ShoppingListFragment"
+        android:name="it.unipi.di.sam.goshopping.ui.shoppinglist.SLFragment"
         android:label="@string/title_shoppinglist"
         tools:layout="@layout/fragment_shoppinglist" />
 

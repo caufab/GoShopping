@@ -1,9 +1,8 @@
 package it.unipi.di.sam.goshopping.ui.shoppinglist;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,12 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import it.unipi.di.sam.goshopping.DbAccess;
 import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
 
 public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ShoppingListViewHolder> {
 
-    private Cursor cursor;
+    //private Cursor cursor;
 
 
     public static class ShoppingListViewHolder extends RecyclerView.ViewHolder {
@@ -46,13 +46,13 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
     }
 
 
-    public ShoppingListAdapter(Cursor c) {
-        this.cursor = c;
+    public ShoppingListAdapter() {
+
     }
 
     @Override
     public int getItemCount() {
-        return cursor.getCount();
+        return SLFragment.cursor.getCount();
     }
 
 
@@ -64,17 +64,16 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
     }
 
 
-    int _id,active_pos;
     String tmp;
-    ContentValues conVal = new ContentValues();
+    ContentValues newVal = new ContentValues();
 
     @Override
     public void onBindViewHolder(@NonNull ShoppingListViewHolder holder, int position) {
 
-        if(cursor.moveToPosition(position)) {
-            holder.id = cursor.getInt(cursor.getColumnIndexOrThrow("_ID"));
+        if(SLFragment.cursor.moveToPosition(position)) {
+            holder.id = SLFragment.cursor.getInt(SLFragment.cursor.getColumnIndexOrThrow("_ID"));
        //     active_pos = cursor.getInt(cursor.getColumnIndexOrThrow("active_pos"));
-            holder.item = cursor.getString(cursor.getColumnIndexOrThrow("item"));
+            holder.item = SLFragment.cursor.getString(SLFragment.cursor.getColumnIndexOrThrow("item"));
         }
 
         tmp = "["+holder.id+"] "+holder.item;
@@ -85,18 +84,6 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             @Override
             public void onClick(View view) {
 
-                conVal.put("item", "newval("+holder.id+")");
-                Log.d("database", "updating row: "+holder.id);
-                MainActivity.db.update("shopping_items", conVal,"_ID="+holder.id, null);
-
-                cursor=MainActivity.db.query(DbAccess.shoppinglist_table_name);
-
-                cursor.moveToPosition(holder.id);
-                Log.e("cursor", "item changed: "+cursor.getString(cursor.getColumnIndexOrThrow("item")));
-
-                notifyItemChanged(holder.id-1);
-
-
             }
         });
 
@@ -105,16 +92,22 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             @Override
             public boolean onLongClick(View view) {
                 // make me edit it
-                holder.setIsRecyclable(false);
+            //    holder.setIsRecyclable(false);
                 holder.et.setText(holder.item);
                 holder.tv.setVisibility(View.INVISIBLE);
                 holder.cl.setVisibility(View.VISIBLE);
                 holder.btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.d("text-example", "Item ["+holder.id+"] new value: "+holder.et.getText());
-                        // TODO: update db
-                        // TODO: notifyItemChanged
+                        Editable ed = holder.et.getText();
+                        if(ed != null && ed.length() != 0) {
+                            newVal.put("item", holder.et.getText().toString());
+                            MainActivity.db.update(DbAccess.shoppinglist_table_name, newVal, "_ID=" + holder.id, null);
+                            SLFragment.cursor=MainActivity.db.query(DbAccess.shoppinglist_table_name);
+                            notifyItemChanged(holder.id-1); // TODO: change to holder.active_pos (to be defined)
+
+                        }
+
                         holder.cl.setVisibility(View.INVISIBLE);
                         holder.tv.setVisibility(View.VISIBLE);
                     }
