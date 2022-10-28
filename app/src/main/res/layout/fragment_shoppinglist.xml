@@ -15,10 +15,24 @@
         app:layout_constraintBottom_toTopOf="@id/input_item_cl"
         app:layout_constraintTop_toTopOf="parent"
         android:paddingHorizontal="20dp"
+        android:paddingBottom="10dp"
+        android:clipToPadding="false"
         tools:layout_editor_absoluteX="1dp" >
+
+
 
     </androidx.recyclerview.widget.RecyclerView>
 
+    <View
+        android:id="@+id/edit_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#B5000000"
+
+        android:focusable="true"
+        android:clickable="true"
+        android:visibility="gone"
+        android:isScrollContainer="false"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/input_item_cl"
@@ -35,28 +49,70 @@
                 android:id="@+id/new_item_input"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
-                android:layout_marginEnd="15dp"
+                android:layout_marginEnd="10dp"
                 android:background="@drawable/rounded_textinput_bg"
                 android:hint="Inserisci un item..."
                 android:singleLine="true"
                 android:paddingHorizontal="15dp"
                 android:paddingVertical="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/input_item_btn"
+                app:layout_constraintEnd_toStartOf="@id/input_btns_cl"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/input_btns_cl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintTop_toTopOf="parent">
+
+
             <Button
-                android:id="@+id/input_item_btn"
+                android:id="@+id/input_item_btn_add"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_baseline_add_circle_24"
+
+
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/input_item_btn_done"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/input_item_btn_undo"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/ic_baseline_done_24"/>
+
+            <Button
+                android:id="@+id/input_item_btn_undo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                android:background="@drawable/ic_baseline_undo_24"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

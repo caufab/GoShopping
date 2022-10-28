@@ -31,18 +31,18 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         TextView tv;
         int id,active_pos;
         String item;
-        TextInputEditText et;
         ConstraintLayout cl;
-        Button btn;
 
+        // debug purpose only
+        TextView dbg;
 
         public ShoppingListViewHolder(@NonNull View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.card_view);
             tv = (TextView) itemView.findViewById(R.id.shoppingitem_text);
-            et = (TextInputEditText) itemView.findViewById(R.id.shoppingitem_editText);
             cl = (ConstraintLayout) itemView.findViewById(R.id.input_item_cl);
-            btn = (Button) itemView.findViewById(R.id.cv_input_item_btn);
+            // debug purpose only
+            dbg = (TextView) itemView.findViewById(R.id.shoppingitem_debugtext);
         }
     }
 
@@ -77,14 +77,17 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             holder.item = SLFragment.cursor.getString(SLFragment.cursor.getColumnIndexOrThrow("item"));
         }
 
-        tmp = "[ID: "+holder.id+"] "+holder.item+"\n[active_pos: "+holder.active_pos+"] [rvPos: "+position+"]";
-        holder.tv.setText(tmp);
+        // Debug purpose only
+        tmp = "[ID: "+holder.id+"] "+holder.item+" [act_po: "+holder.active_pos+"] [rv: "+position+"]";
+        holder.dbg.setText(tmp);
 
+        tmp = holder.item;
+        holder.tv.setText(tmp);
 
         holder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                MainActivity.db.removeItem(holder.id, holder.getAdapterPosition());
             }
         });
 
@@ -93,26 +96,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             @Override
             public boolean onLongClick(View view) {
                 // make me edit it
-            //    holder.setIsRecyclable(false);
-                holder.et.setText(holder.item);
-                holder.tv.setVisibility(View.INVISIBLE);
-                holder.cl.setVisibility(View.VISIBLE);
-                holder.btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Editable ed = holder.et.getText();
-                        if(ed != null && ed.length() != 0) {
-                            MainActivity.db.updateItem(holder.id, holder.active_pos, holder.et.getText().toString());
-                       //     SLFragment.cursor=MainActivity.db.query(DbAccess.shoppinglist_table_name);
-                       //    notifyItemChanged(holder.active_pos-1);
-
-                        }
-
-                        holder.cl.setVisibility(View.INVISIBLE);
-                        holder.tv.setVisibility(View.VISIBLE);
-                    }
-                });
-
+                SLFragment.editItem(holder);
 
                 return true;
             }

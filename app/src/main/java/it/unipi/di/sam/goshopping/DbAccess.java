@@ -73,22 +73,23 @@ public class DbAccess extends Activity {
 
 
     public Cursor query(String table) {
+        // TODO: add thread handler
         SQLiteDatabase db = mOH.getReadableDatabase();
-        return db.query(shoppinglist_table_name, null, null, null, null, null, "active_pos");
+        return db.query(shoppinglist_table_name, null, "active_pos>0", null, null, null, "active_pos");
     }
 
     public void insertItem (String table, String nullColumnHack, ContentValues val) {
         Thread T = new Thread(new Runnable() {
             @Override
             public void run() {
-                try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
                 SQLiteDatabase db = mOH.getWritableDatabase();
+                // check if element exists
+            //    db.query(shoppinglist_table_name,null,)
                 db.insert(table, nullColumnHack, val);
                 runOnUiThread(new SLFragment.RefreshRVOnInsert());
             }
         });
         T.start();
-
     }
 
     // to be used when users will (maybe) be able to delete items from stats
@@ -101,18 +102,28 @@ public class DbAccess extends Activity {
         Thread T = new Thread(new Runnable() {
             @Override
             public void run() {
-                //try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
                 SQLiteDatabase db = mOH.getWritableDatabase();
                 ContentValues val = new ContentValues();
                 val.put("item", newItemVal);
-            //    Log.d("update", "id: "+id+" | act_pos: "+active_position+" | newItemVal: "+newItemVal);
                 db.update(shoppinglist_table_name, val, "_ID="+id, null);
                 runOnUiThread(new SLFragment.RefreshRVOnUpdate(active_position-1));
             }
         });
         T.start();
+    }
 
-
+    public void removeItem (int id, int itemPosition) {
+        Thread T = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SQLiteDatabase db = mOH.getWritableDatabase();
+                ContentValues val = new ContentValues();
+                val.put("active_pos", -1);
+                db.update(shoppinglist_table_name, val, "_ID="+id, null);
+                runOnUiThread(new SLFragment.RefreshRVOnRemoved(itemPosition));
+            }
+        });
+        T.start();
     }
 
 
