@@ -81,8 +81,6 @@ public class SLFragment extends Fragment {
         addItemBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            //    InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(getContext().INPUT_METHOD_SERVICE);
-            //    inputMethodManager.toggleSoftInputFromWindow( root.getApplicationWindowToken(), InputMethodManager.SHOW_IMPLICIT, 0);
 
                 Editable ed = et.getText();
                 if(ed != null) {
@@ -92,7 +90,6 @@ public class SLFragment extends Fragment {
                         if(p == -1) {
                             // TODO: also if item is not already in list (check with query or in cursor?)
                             newVal.put("item", str);
-                            newVal.put("active_pos", cursor.getCount() + 1);
                             MainActivity.db.insertItem(DbAccess.shoppinglist_table_name, null, newVal);
                         } else { // TODO: show something (effect of cardview or snackbar)
                             rv.scrollToPosition(p);
@@ -145,7 +142,7 @@ public class SLFragment extends Fragment {
                         if (p != -1) // item is not in list
                             rv.scrollToPosition(p);
                         else // if(element is in database) equals to inserting element that already exists in db
-                            MainActivity.db.updateItem(holder.id, holder.active_pos, str);
+                            MainActivity.db.updateItem(holder.id, holder.getAdapterPosition(), str);
                     }
                 }
                 undo.setVisibility(View.GONE);

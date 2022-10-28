@@ -73,12 +73,12 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
         if(SLFragment.cursor.moveToPosition(position)) {
             holder.id = SLFragment.cursor.getInt(SLFragment.cursor.getColumnIndexOrThrow("_ID"));
-            holder.active_pos = SLFragment.cursor.getInt(SLFragment.cursor.getColumnIndexOrThrow("active_pos"));
+        //    holder.active_pos = SLFragment.cursor.getInt(SLFragment.cursor.getColumnIndexOrThrow("active_pos"));
             holder.item = SLFragment.cursor.getString(SLFragment.cursor.getColumnIndexOrThrow("item"));
         }
 
         // Debug purpose only
-        tmp = "[ID: "+holder.id+"] "+holder.item+" [act_po: "+holder.active_pos+"] [rv: "+position+"]";
+        tmp = "[ID: "+holder.id+"] "+holder.item+" [rv: "+position+"]";
         holder.dbg.setText(tmp);
 
         tmp = holder.item;

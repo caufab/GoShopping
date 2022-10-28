@@ -37,14 +37,15 @@ public class DbAccess extends Activity {
             switch(table_name) {
                 case shoppinglist_table_name:
                     q = "CREATE TABLE IF NOT EXISTS "+shoppinglist_table_name+
-                            " (_ID INTEGER PRIMARY KEY, item TEXT, info TEXT, active_pos INTEGER);";
+                            " (_ID INTEGER PRIMARY KEY, item TEXT);";
                     break;
                 case ficardlist_table_name:
                     q = "CREATE TABLE IF NOT EXISTS "+ ficardlist_table_name +
-                            " (_ID INTEGER PRIMARY KEY, card TEXT, info TEXT, active_pos INTEGER)";
+                            " (_ID INTEGER PRIMARY KEY, card TEXT)";
                 default:
                     return;
             };
+            // TODO: start thread
             db.execSQL(q);
         }
 
@@ -58,6 +59,7 @@ public class DbAccess extends Activity {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w("DB", "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
+            // TODO: start thread
             db.execSQL("DROP TABLE IF EXISTS "+shoppinglist_table_name);
             onCreate(db);
         }
@@ -68,14 +70,17 @@ public class DbAccess extends Activity {
 
     public DbAccess(Context context) {
         mOH = new mSQLiteOH(context);
-
+        // making sure tables still exists
+        SQLiteDatabase db = mOH.getWritableDatabase();
+        mOH.createTableINE(db, shoppinglist_table_name);
+        mOH.createTableINE(db, ficardlist_table_name);
     }
 
 
     public Cursor query(String table) {
         // TODO: add thread handler
         SQLiteDatabase db = mOH.getReadableDatabase();
-        return db.query(shoppinglist_table_name, null, "active_pos>0", null, null, null, "active_pos");
+        return db.query(shoppinglist_table_name, null, null, null, null, null, "_ID");
     }
 
     public void insertItem (String table, String nullColumnHack, ContentValues val) {
@@ -83,22 +88,18 @@ public class DbAccess extends Activity {
             @Override
             public void run() {
                 SQLiteDatabase db = mOH.getWritableDatabase();
-                // check if element exists
-            //    db.query(shoppinglist_table_name,null,)
                 db.insert(table, nullColumnHack, val);
+
+
+
                 runOnUiThread(new SLFragment.RefreshRVOnInsert());
             }
         });
         T.start();
     }
 
-    // to be used when users will (maybe) be able to delete items from stats
-    public void delete(String table, String whereClause, Object whereArgs) {
-        SQLiteDatabase db = mOH.getWritableDatabase();
-        db.delete(shoppinglist_table_name,whereClause,null);
-    }
 
-    public void updateItem (int id, int active_position, String newItemVal) {
+    public void updateItem (int id, int adapterPos, String newItemVal) {
         Thread T = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -106,7 +107,7 @@ public class DbAccess extends Activity {
                 ContentValues val = new ContentValues();
                 val.put("item", newItemVal);
                 db.update(shoppinglist_table_name, val, "_ID="+id, null);
-                runOnUiThread(new SLFragment.RefreshRVOnUpdate(active_position-1));
+                runOnUiThread(new SLFragment.RefreshRVOnUpdate(adapterPos));
             }
         });
         T.start();
@@ -117,9 +118,7 @@ public class DbAccess extends Activity {
             @Override
             public void run() {
                 SQLiteDatabase db = mOH.getWritableDatabase();
-                ContentValues val = new ContentValues();
-                val.put("active_pos", -1);
-                db.update(shoppinglist_table_name, val, "_ID="+id, null);
+                db.delete(shoppinglist_table_name,"_ID="+id,null);
                 runOnUiThread(new SLFragment.RefreshRVOnRemoved(itemPosition));
             }
         });
@@ -130,45 +129,6 @@ public class DbAccess extends Activity {
 }
 
 
-
-/*
-    private DatabaseHelper gsOpenHelper;
-
-    @Override
-    public boolean onCreate() {
-        gsOpenHelper = new DatabaseHelper(getContext());
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public String getType(@NonNull Uri uri) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        return null;
-    }
-
-    @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
-    }
-
-    @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        return 0;
-    }
-}
-*/
 
 
 
