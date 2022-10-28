@@ -1,5 +1,6 @@
 package it.unipi.di.sam.goshopping;
 
+import android.app.Activity;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,7 +11,9 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-public class DbAccess {
+import it.unipi.di.sam.goshopping.ui.shoppinglist.SLFragment;
+
+public class DbAccess extends Activity {
 
     // run on background thread!
 
@@ -65,37 +68,51 @@ public class DbAccess {
 
     public DbAccess(Context context) {
         mOH = new mSQLiteOH(context);
+
     }
 
 
     public Cursor query(String table) {
         SQLiteDatabase db = mOH.getReadableDatabase();
-        return db.query(shoppinglist_table_name, null, null, null, null, null, null);
+        return db.query(shoppinglist_table_name, null, null, null, null, null, "active_pos");
     }
 
-    public void insert (String table, String nullColumnHack, ContentValues val) {
-      //  Thread Tins = new Thread(new Runnable() {
-      //      @Override
-      //      public void run() {
-           //     try { Thread.sleep(2000); } catch (InterruptedException e) {}
-        SQLiteDatabase db = mOH.getWritableDatabase();
-        db.insert(table, nullColumnHack, val);
-
-       //     }
-
-     //   });
-       // Tins.start();
+    public void insertItem (String table, String nullColumnHack, ContentValues val) {
+        Thread T = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+                SQLiteDatabase db = mOH.getWritableDatabase();
+                db.insert(table, nullColumnHack, val);
+                runOnUiThread(new SLFragment.RefreshRVOnInsert());
+            }
+        });
+        T.start();
 
     }
 
+    // to be used when users will (maybe) be able to delete items from stats
     public void delete(String table, String whereClause, Object whereArgs) {
         SQLiteDatabase db = mOH.getWritableDatabase();
         db.delete(shoppinglist_table_name,whereClause,null);
     }
 
-    public void update(String table, ContentValues values, String whereClause, String[] whereArgs) {
-        SQLiteDatabase db = mOH.getWritableDatabase();
-        db.update(table, values, whereClause, whereArgs);
+    public void updateItem (int id, int active_position, String newItemVal) {
+        Thread T = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+                SQLiteDatabase db = mOH.getWritableDatabase();
+                ContentValues val = new ContentValues();
+                val.put("item", newItemVal);
+            //    Log.d("update", "id: "+id+" | act_pos: "+active_position+" | newItemVal: "+newItemVal);
+                db.update(shoppinglist_table_name, val, "_ID="+id, null);
+                runOnUiThread(new SLFragment.RefreshRVOnUpdate(active_position-1));
+            }
+        });
+        T.start();
+
+
     }
 
 
