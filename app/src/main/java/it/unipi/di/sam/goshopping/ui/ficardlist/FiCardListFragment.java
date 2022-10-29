@@ -9,8 +9,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
+import it.unipi.di.sam.goshopping.R;
 import it.unipi.di.sam.goshopping.databinding.FragmentFicardlistBinding;
 
 public class FiCardListFragment extends Fragment {
@@ -23,9 +23,8 @@ public class FiCardListFragment extends Fragment {
 
         binding = FragmentFicardlistBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+    //    View root =  inflater.inflate(R.layout.fragment_shoppinglist, container, false);
 
-    //    final TextView textView = binding.textFicardlist;
-    //    fiCardListViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
 
 
@@ -43,6 +42,5 @@ public class FiCardListFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
     }
 }

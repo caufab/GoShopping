@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/teal_200"
+    android:background="#EAE2E2"
     tools:context=".ui.shoppinglist.SLFragment">
 
 
@@ -17,6 +17,7 @@
         android:paddingHorizontal="20dp"
         android:paddingBottom="10dp"
         android:clipToPadding="false"
+
         tools:layout_editor_absoluteX="1dp" >
 
 
@@ -28,11 +29,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#B5000000"
-
         android:focusable="true"
         android:clickable="true"
-        android:visibility="gone"
-        android:isScrollContainer="false"/>
+        android:visibility="gone"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/input_item_cl"
@@ -80,7 +79,8 @@
                 android:layout_weight="1"
                 android:background="@drawable/ic_baseline_add_circle_24"
 
-
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -92,6 +92,9 @@
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
                 android:visibility="gone"
+
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/input_item_btn_undo"
                 app:layout_constraintTop_toTopOf="parent"
@@ -103,6 +106,9 @@
                 android:layout_height="40dp"
                 android:layout_weight="1"
                 android:visibility="gone"
+
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:background="@drawable/ic_baseline_undo_24"
