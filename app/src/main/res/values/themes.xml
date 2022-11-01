@@ -2,23 +2,39 @@
     <!-- Base application theme. -->
     <style name="Theme.GoShopping" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
-        <item name="colorOnPrimary">@color/primaryTextColor</item>
-        <!--
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/red_primary</item>
+        <item name="colorPrimaryVariant">@color/red_primaryLight</item>
         <item name="colorOnPrimary">@color/white</item>
-        -->
+
 
         <!-- Secondary brand color. -->
 
-        <item name="colorSecondary">@color/primaryColor</item>
-        <item name="colorSecondaryVariant">@color/primaryDarkColor</item>
-        <item name="colorOnSecondary">@color/primaryTextColor</item>
+        <item name="colorSecondary">@color/red_primaryDark</item>
+        <item name="colorSecondaryVariant">@color/red_primaryDark</item>
+        <item name="colorOnSecondary">@color/white</item>
 
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">@color/red_primaryDark</item>
         <!-- Customize your theme here. -->
+
+           <item name="android:windowTitleBackgroundStyle">@color/black</item>
+
+        <item name="android:navigationBarColor">@color/red_primaryDark</item>
+
+   <!--     <item name="android:actionBarStyle">@style/ActionBar</item> -->
+
+
     </style>
+
+
+
+
+ <!--
+   -->
+
+    <!-- Actionbar Theme
+    <style name="ActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@drawable/rounded_textinput_bg</item>
+    </style>
+    -->
 </resources>

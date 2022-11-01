@@ -2,7 +2,7 @@
 <resources>
 
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#FFFFFF</color>
 
     <!-- for debug purpose only -->
 
@@ -11,13 +11,10 @@
     <color name="red_primaryDark">#b20000</color>
 
     <color name="red_primaryDarkVariant">#FFFFE7E6</color>
-    <color name="mBackground">#FFE1E2E1</color>
 
-    <color name="bottomBar">#FFFFFF</color>
+    <color name="mBackground">#FF121212</color>
 
-
-    <!--   <color name="buttons">#303030</color>-->
-
+    <color name="bottomBar">#303030</color>
 
 
 </resources>

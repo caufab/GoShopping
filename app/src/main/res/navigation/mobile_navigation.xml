@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/navigation_ficardlist"
-        android:name="it.unipi.di.sam.goshopping.ui.ficardlist.FiCardListFragment"
+        android:name="it.unipi.di.sam.goshopping.ui.ficardlist.FCFragment"
         android:label="@string/title_ficardlist"
         tools:layout="@layout/fragment_ficardlist" />
 

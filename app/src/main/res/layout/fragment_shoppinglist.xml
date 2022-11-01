@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EAE2E2"
     tools:context=".ui.shoppinglist.SLFragment">
 
 
@@ -15,12 +14,10 @@
         app:layout_constraintBottom_toTopOf="@id/input_item_cl"
         app:layout_constraintTop_toTopOf="parent"
         android:paddingHorizontal="20dp"
+        android:background="@color/mBackground"
         android:paddingBottom="10dp"
         android:clipToPadding="false"
-
         tools:layout_editor_absoluteX="1dp" >
-
-
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -40,7 +37,9 @@
             android:orientation="horizontal"
             android:paddingHorizontal="15dp"
             android:paddingVertical="10dp"
-            android:background="@color/design_default_color_background"
+            android:background="@color/bottomBar"
+            android:backgroundTint="@color/bottomBar"
+            android:backgroundTintMode="src_atop"
             app:layout_constraintBottom_toBottomOf="parent">
 
 
