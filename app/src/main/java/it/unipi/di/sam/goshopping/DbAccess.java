@@ -11,6 +11,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import it.unipi.di.sam.goshopping.ui.cardlist.CLFragment;
 import it.unipi.di.sam.goshopping.ui.shoppinglist.SLFragment;
 
 public class DbAccess extends Activity {
@@ -20,39 +21,46 @@ public class DbAccess extends Activity {
 
     public static final String DATABASE_NAME = "gs_database.db";
     public static final String shoppinglist_table_name = "shopping_items";
-    public static final String ficardlist_table_name = "cards";
+    public static final String cardlist_table_name = "cards";
     public static final int DATABASE_VERSION = 2;
 
 
 
 
-     private static class mSQLiteOH extends SQLiteOpenHelper {
+    private static class mSQLiteOH extends SQLiteOpenHelper {
 
          mSQLiteOH(Context context) {
              super(context, DATABASE_NAME, null, DATABASE_VERSION);
          }
 
          public void createTableINE(SQLiteDatabase db, String table_name) {
-            String q;
-            switch(table_name) {
-                case shoppinglist_table_name:
-                    q = "CREATE TABLE IF NOT EXISTS "+shoppinglist_table_name+
-                            " (_ID INTEGER PRIMARY KEY, item TEXT);";
-                    break;
-                case ficardlist_table_name:
-                    q = "CREATE TABLE IF NOT EXISTS "+ ficardlist_table_name +
-                            " (_ID INTEGER PRIMARY KEY, card TEXT)";
-                default:
-                    return;
-            };
-            // TODO: start thread
-            db.execSQL(q);
+
+            Thread T = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String q = "";
+                    switch(table_name) {
+                        case shoppinglist_table_name:
+                            q = "CREATE TABLE IF NOT EXISTS "+shoppinglist_table_name+
+                                    " (_ID INTEGER PRIMARY KEY, item TEXT);";
+                            db.execSQL(q);
+                            break;
+                        case cardlist_table_name:
+                            q = "CREATE TABLE IF NOT EXISTS "+ cardlist_table_name +
+                                    " (_ID INTEGER PRIMARY KEY, name TEXT, code TEXT, format TEXT, used_times INTEGER)";
+                            db.execSQL(q);
+                        default:
+                            break;
+                    };
+                }
+            });
+            T.start();
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
             createTableINE(db,shoppinglist_table_name);
-            createTableINE(db, ficardlist_table_name);
+            createTableINE(db, cardlist_table_name);
         }
 
         @Override
@@ -73,7 +81,7 @@ public class DbAccess extends Activity {
         // making sure tables still exists
         SQLiteDatabase db = mOH.getWritableDatabase();
         mOH.createTableINE(db, shoppinglist_table_name);
-        mOH.createTableINE(db, ficardlist_table_name);
+        mOH.createTableINE(db, cardlist_table_name);
     }
 
 
@@ -83,44 +91,75 @@ public class DbAccess extends Activity {
         return db.query(shoppinglist_table_name, null, null, null, null, null, "_ID");
     }
 
+    public Cursor getCards() {
+        // TODO: thread on query?
+        SQLiteDatabase db = mOH.getReadableDatabase();
+        return db.query(cardlist_table_name, null, null, null, null, null, "used_times");
+    }
+
+    public void updateCard(int id, String name, String code, String barcodeFormat, int cardRvPos) {
+        ContentValues val = new ContentValues();
+        val.put("name", name);
+        val.put("code", code);
+        val.put("format", barcodeFormat);
+        Thread T = new Thread(() -> {
+            SQLiteDatabase db = mOH.getWritableDatabase();
+            db.update(cardlist_table_name, val, "_ID="+id, null);
+            runOnUiThread(new CLFragment.RefreshRVOnCardUpdate(cardRvPos));
+        });
+        T.start();
+    }
+
+    public void addCard(String name, String code, String barcodeFormat) {
+        ContentValues val = new ContentValues();
+        val.put("name", name);
+        val.put("code", code);
+        val.put("format", barcodeFormat);
+        val.put("used_times", 0);
+        Thread T = new Thread(() -> {
+            SQLiteDatabase db = mOH.getWritableDatabase();
+            db.insert(cardlist_table_name, null, val);
+            runOnUiThread(new CLFragment.RefreshRVOnCardInsert());
+        });
+        T.start();
+    }
+
+    public void removeCard(int id, int cardRvPos) {
+        Thread T = new Thread(() -> {
+            SQLiteDatabase db = mOH.getWritableDatabase();
+            db.delete(cardlist_table_name, "_ID="+id, null);
+            runOnUiThread(new CLFragment.RefreshRVOnCardRemoved(cardRvPos));
+        });
+        T.start();
+    }
+
+
     public void insertItem (String table, String nullColumnHack, ContentValues val) {
-        Thread T = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SQLiteDatabase db = mOH.getWritableDatabase();
-                db.insert(table, nullColumnHack, val);
-
-
-
-                runOnUiThread(new SLFragment.RefreshRVOnInsert());
-            }
+        Thread T = new Thread(() -> {
+            SQLiteDatabase db = mOH.getWritableDatabase();
+            db.insert(table, nullColumnHack, val);
+            runOnUiThread(new SLFragment.RefreshRVOnInsert());
         });
         T.start();
     }
 
 
     public void updateItem (int id, int adapterPos, String newItemVal) {
-        Thread T = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SQLiteDatabase db = mOH.getWritableDatabase();
-                ContentValues val = new ContentValues();
-                val.put("item", newItemVal);
-                db.update(shoppinglist_table_name, val, "_ID="+id, null);
-                runOnUiThread(new SLFragment.RefreshRVOnUpdate(adapterPos));
-            }
+        Thread T = new Thread(() -> {
+            SQLiteDatabase db = mOH.getWritableDatabase();
+            ContentValues val = new ContentValues();
+            val.put("item", newItemVal);
+            db.update(shoppinglist_table_name, val, "_ID="+id, null);
+            runOnUiThread(new SLFragment.RefreshRVOnUpdate(adapterPos));
         });
         T.start();
     }
 
     public void removeItem (int id, int itemPosition) {
-        Thread T = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SQLiteDatabase db = mOH.getWritableDatabase();
-                db.delete(shoppinglist_table_name,"_ID="+id,null);
-                runOnUiThread(new SLFragment.RefreshRVOnRemoved(itemPosition));
-            }
+        Thread T = new Thread(() -> {
+            SQLiteDatabase db = mOH.getWritableDatabase();
+            db.delete(shoppinglist_table_name,"_ID="+id,null);
+            runOnUiThread(new SLFragment.RefreshRVOnRemoved(itemPosition));
         });
         T.start();
     }

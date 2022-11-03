@@ -11,13 +11,13 @@
         android:id="@+id/shoppinglist_rv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/mBackground"
+        android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:paddingBottom="10dp"
         app:layout_constraintBottom_toTopOf="@id/input_item_cl"
         app:layout_constraintTop_toTopOf="parent"
-        android:paddingHorizontal="20dp"
-        android:background="@color/mBackground"
-        android:paddingBottom="10dp"
-        android:clipToPadding="false"
-        tools:layout_editor_absoluteX="1dp" >
+        tools:layout_editor_absoluteX="1dp">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -26,63 +26,61 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#B5000000"
-        android:focusable="true"
         android:clickable="true"
-        android:visibility="gone"/>
+        android:focusable="true"
+        android:visibility="gone" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/input_item_cl"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/input_item_cl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bottomBar"
+        android:backgroundTint="@color/bottomBar"
+        android:backgroundTintMode="src_atop"
+        android:orientation="horizontal"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="15dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/new_item_input"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/rounded_textinput_bg"
+            android:digits="QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm £$%&amp;,.;:_òàèù+°\1234567890'ì/*-+()[]{}"
+            android:hint="Inserisci un item..."
             android:paddingHorizontal="15dp"
-            android:paddingVertical="10dp"
-            android:background="@color/bottomBar"
-            android:backgroundTint="@color/bottomBar"
-            android:backgroundTintMode="src_atop"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/new_item_input"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/rounded_textinput_bg"
-                android:hint="Inserisci un item..."
-                android:singleLine="true"
-                android:paddingHorizontal="15dp"
-                android:paddingVertical="5dp"
-                android:digits="QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm £$%&amp;,.;:_òàèù+°\1234567890'ì/*-+()[]{}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/input_btns_cl"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
+            android:paddingVertical="5dp"
+            android:singleLine="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/input_btns_cl"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/input_btns_cl"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-
             app:layout_constraintTop_toTopOf="parent">
 
 
             <Button
                 android:id="@+id/input_item_btn_add"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_baseline_add_circle_24"
-
-                android:foreground="?android:attr/selectableItemBackground"
+                android:foreground="?selectableItemBackgroundBorderless"
                 android:clickable="true"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
 
             <Button
                 android:id="@+id/input_item_btn_done"
@@ -90,35 +88,34 @@
                 android:layout_height="40dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:visibility="gone"
+                android:background="@drawable/ic_baseline_done_24"
 
-                android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                app:layout_constraintStart_toStartOf="parent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@id/input_item_btn_undo"
-                app:layout_constraintTop_toTopOf="parent"
-                android:background="@drawable/ic_baseline_done_24"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <Button
                 android:id="@+id/input_item_btn_undo"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_weight="1"
-                android:visibility="gone"
-
-                android:foreground="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 android:background="@drawable/ic_baseline_undo_24"
-                />
+
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

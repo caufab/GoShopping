@@ -1,0 +1,180 @@
+package it.unipi.di.sam.goshopping.ui.cardlist;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.google.zxing.BarcodeFormat;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
+
+import it.unipi.di.sam.goshopping.MainActivity;
+import it.unipi.di.sam.goshopping.R;
+
+public class NewCardActivity extends AppCompatActivity {
+
+
+    private EditText barcodeET;
+    private ImageView imageView;
+    private String barcodeFormat;
+    private TextView barcodeTV;
+    private TextView cardName;
+    private Button addCardBtn;
+    private Button cancelBtn;
+    private ImageButton btn_scan;
+    private Button remCardBtn;
+
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
+        setContentView(R.layout.activity_new_card);
+
+        addCardBtn = findViewById(R.id.add_card_btn);
+        cancelBtn = findViewById(R.id.cancel_card_button);
+        barcodeET = findViewById(R.id.new_card_edittext);
+        imageView = findViewById(R.id.barcode_preview_image);
+        barcodeTV = findViewById(R.id.barcode_text);
+        btn_scan = findViewById(R.id.scan_btn);
+        cardName = findViewById(R.id.card_name);
+        remCardBtn = findViewById(R.id.rem_card_btn);
+
+
+        Bundle b = getIntent().getExtras();
+        if(b != null) { // edit card use case
+            barcodeET.setText(b.getString("code"));
+            cardName.setText(b.getString("name"));
+            barcodeTV.setText(b.getString("code"));
+            barcodeFormat = b.getString("format");
+            addCardBtn.setText("Aggiorna");
+            remCardBtn.setVisibility(View.VISIBLE);
+
+            remCardBtn.setOnClickListener(view -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setTitle("Elimina carta");
+                builder.setMessage("Sei sicuro di voler eliminare la carta "+b.getString("name"));
+                builder.setPositiveButton("Conferma", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        MainActivity.db.removeCard(b.getInt("id"), b.getInt("rv_pos"));
+                        dialogInterface.dismiss();
+                        finish();
+                    }
+                }).setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }).show();
+
+            });
+
+            // If imageView has been created generate immediately the barcode, otherwise wait until it is created
+            if(imageView.isLaidOut())
+                CLFragment.bcUtils.generateBarcodeImage(imageView, barcodeFormat, barcodeET.getText().toString());
+            else
+                imageView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        imageView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        CLFragment.bcUtils.generateBarcodeImage(imageView, barcodeFormat, barcodeET.getText().toString());
+                    }
+                });
+        } else { // new card use case
+            addCardBtn.setText("Aggiungi");
+            remCardBtn.setVisibility(View.GONE);
+        }
+
+        // scan barcode with camera
+        btn_scan.setOnClickListener(view -> {
+            ScanOptions options = new ScanOptions();
+            options.setPrompt("Volume up to flash on");
+            options.setBeepEnabled(true);
+            options.setOrientationLocked(true);
+            options.setCaptureActivity(CaptureAct.class);
+            barLauncher.launch(options);
+
+        });
+
+        // go back
+        cancelBtn.setOnClickListener(view -> finish());
+        // add new card to database
+        addCardBtn.setOnClickListener(view -> {
+            if (b == null) // add mode
+                MainActivity.db.addCard(cardName.getText().toString(), barcodeET.getText().toString(), barcodeFormat);
+            else // edit mode
+                MainActivity.db.updateCard(b.getInt("id"), cardName.getText().toString(), barcodeET.getText().toString(), barcodeFormat, b.getInt("rv_pos"));
+            finish();
+        });
+        // barcode has changed
+        barcodeET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                addCardBtn.setEnabled(cardName.getText().toString().trim().length() > 0 // enable/disable button
+                        && barcodeET.getText().toString().trim().length() > 0);
+                if (barcodeET.length() == 0) { // EditText empty
+                    imageView.setImageDrawable(null);
+                    barcodeTV.setText("");
+                } else if (barcodeET.hasFocus()) { // EditText not empty and modified by user (currently on focus)
+                    barcodeFormat = BarcodeFormat.CODE_128.toString(); // sets default barcode format
+                    CLFragment.bcUtils.generateBarcodeImage(imageView, barcodeFormat, barcodeET.getText().toString());
+                    barcodeTV.setText(barcodeET.getText());
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+        // name has changed
+        cardName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                addCardBtn.setEnabled(cardName.getText().toString().trim().length() > 0
+                        && barcodeET.getText().toString().trim().length() > 0);
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+
+    }
+
+    // Get barcode from camera activity
+    ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
+        if(result.getContents() != null) {
+            barcodeET.setText(result.getContents());
+            barcodeFormat = result.getFormatName();
+            barcodeTV.setText(result.getContents());
+            CLFragment.bcUtils.generateBarcodeImage(imageView, barcodeFormat, barcodeET.getText().toString());
+        }
+    });
+
+
+
+    @Override
+    protected void onDestroy() { super.onDestroy(); }
+
+    @Override
+    protected void onPause() { super.onPause(); }
+
+    @Override
+    protected void onResume() { super.onResume(); }
+
+
+}

@@ -4,8 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.ficardlist.FCFragment">
+    tools:context=".ui.cardlist.CLFragment">
 
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cardlist_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/mBackground"
+        android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -18,8 +31,139 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="TODO" />
+        android:contentDescription="Add new card" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/edit_card_fab"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@drawable/ic_baseline_edit_24"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="Add new card" />
+
+    <View
+        android:id="@+id/show_card_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#B5000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/show_card_cl"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        app:layout_constraintHeight_min="300dp"
+        android:visibility="invisible"
+        android:layout_marginHorizontal="20dp"
+        android:background="@drawable/rounded_card_bg"
+        android:backgroundTint="@color/red_primary"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardlist_rv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/show_card_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="#FF121212"
+            android:text="Coop"
+            android:textAlignment="center"
+            android:textSize="40sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_card_bg"
+            android:backgroundTint="#FFFFFFFF"
+            android:paddingVertical="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/show_card_name"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16dp"
+                android:paddingHorizontal="10dp"
+                android:gravity="center_horizontal"
+                android:textColor="#868686"
+                android:text="Impossibile visualizzare il codice a barre di questa carta. Prova a reinserire il codice usando la fotocamera"
+                app:layout_constraintTop_toTopOf="@id/barcode_image"
+                app:layout_constraintBottom_toBottomOf="@id/barcode_image"/>
+
+            <ImageView
+                android:id="@+id/barcode_image"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:contentDescription="Barcode generated image"
+                app:layout_constraintBottom_toTopOf="@id/barcode_text"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+
+
+            <TextView
+                android:id="@+id/barcode_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textColor="#FF121212"
+                android:gravity="center_horizontal"
+                android:text="65464654646460640"
+                android:letterSpacing="0.3"
+                android:maxLines="1"
+                android:textSize="20sp"
+                app:layout_constraintTop_toBottomOf="@id/barcode_image"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <!--
+    <androidx.cardview.widget.CardView
+        android:id="@+id/show_card_cv"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp"
+        android:paddingHorizontal="30dp"
+        android:paddingVertical="20dp"
+        app:cardBackgroundColor="@color/cardview_light_background"
+        app:cardCornerRadius="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+
+        <TextView
+            android:id="@+id/show_card_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Coop"
+            android:textAlignment="center"
+            android:textSize="30sp" />
+
+  </androidx.cardview.widget.CardView>  -->
 
 
 

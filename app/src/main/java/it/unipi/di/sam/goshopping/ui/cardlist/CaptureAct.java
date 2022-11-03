@@ -1,4 +1,4 @@
-package it.unipi.di.sam.goshopping.ui.ficardlist;
+package it.unipi.di.sam.goshopping.ui.cardlist;
 
 import com.journeyapps.barcodescanner.CaptureActivity;
 

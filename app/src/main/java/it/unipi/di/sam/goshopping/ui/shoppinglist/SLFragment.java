@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -20,6 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import it.unipi.di.sam.goshopping.DbAccess;
 import it.unipi.di.sam.goshopping.MainActivity;
@@ -47,7 +50,7 @@ public class SLFragment extends Fragment {
             // exit app somehow
         }
         // Database initial insert
-            /*
+        /*
         MainActivity.db.delete("shopping_items","_ID>0", null);
 
         for(int i=1;i<5;i++) {
