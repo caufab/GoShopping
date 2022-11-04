@@ -3,4 +3,7 @@
     <string name="title_shoppinglist">Lista della spesa</string>
     <string name="title_ficardlist">Carte Fedeltà</string>
     <string name="title_stats">Stats [TO-DO]</string>
+    <string name="channel_name">CanaleProva</string>
+    <string name="channel_description">descrizione molto fantasiosa</string>
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
 </resources>
