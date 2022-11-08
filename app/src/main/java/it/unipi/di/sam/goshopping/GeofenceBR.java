@@ -21,35 +21,34 @@ public class GeofenceBR extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-    //    if(intent == null) Log.e("Geofencing", "onReceive parameter 'intent' is null");
-    //    else Log.e("Geofencing", "onReceive parameter 'intent' is NOT null");
-        GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
-        if(geofencingEvent == null) Log.e("Geofencing", "geofencingEvent is null");
-        else Log.d("Geofencing", "geofencing NOT null!!!");
-        if(geofencingEvent.hasError()) {
-            String errorMessage = GeofenceStatusCodes.getStatusCodeString(geofencingEvent.getErrorCode());
+        GeofencingEvent gEvent = GeofencingEvent.fromIntent(intent);
+        if(gEvent == null) return;
+        if(gEvent.hasError()) {
+            String errorMessage = GeofenceStatusCodes.getStatusCodeString(gEvent.getErrorCode());
             Log.e("GeofenceBR", errorMessage);
             return;
         }
         // Get the transition type
-        int geofenceTransition = geofencingEvent.getGeofenceTransition();
+        int gTransition = gEvent.getGeofenceTransition();
 
         // Test that the reported transition was of interest
-        if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-                geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-            // Get the geofences that were triggered. A single event can trigger multiple geofences
-            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+        if(gTransition == Geofence.GEOFENCE_TRANSITION_EXIT ||
+            gTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
+            List<Geofence> triggeringGeofences = gEvent.getTriggeringGeofences();
             // Get the transition details as a String
-            String geofenceTransitionDetails = getGeofenceTransitionDetails(geofenceTransition,triggeringGeofences);
-            // Send notification and log the transition details
-            //   sendNotification(geofenceTransitionDetails);
-            Log.i("Geofence", geofenceTransitionDetails);
-        } else {
-            // Log the error
-            Log.e("Geofence", "there was an error in transition");
-        //    Log.e("Geofence", getString(R.string.geofence_transition_invalid_type,geofenceTransition));
-        }
+            String geofenceTransitionDetails = getGeofenceTransitionDetails(gTransition,triggeringGeofences);
+            Log.i("Geofence", geofenceTransitionDetails); // DEBUG
+            ArrayList<String> triggeringGeofencesIdsList = new ArrayList<>();
+            for(Geofence geofence : triggeringGeofences)
+                triggeringGeofencesIdsList.add(geofence.getRequestId());
+            String triggeringGeofenceIdsString = TextUtils.join(",", triggeringGeofencesIdsList);
 
+            if(getTransitionString(gTransition).equals("exit"))
+                Utils.cancelNotification(context, getIntFromReqId(triggeringGeofenceIdsString));
+            else if(getTransitionString(gTransition).equals("dwell"))
+                Utils.sendNotification(context, getIntFromReqId(triggeringGeofenceIdsString)+10, "Dwell", "Sei da 5 secondi in " + triggeringGeofenceIdsString, null);
+        } else // Log the error
+            Log.e("Geofence", "Unknown geofence transition"); // Needed?
     }
 
     /**
@@ -66,6 +65,7 @@ public class GeofenceBR extends BroadcastReceiver {
         for(Geofence geofence : triggeringGeofences) 
             triggeringGeofencesIdsList.add(geofence.getRequestId());
         String triggeringGeofenceIdsString = TextUtils.join(",", triggeringGeofencesIdsList);
+
         return geofenceTransitionString + ": " + triggeringGeofenceIdsString;
 
     }
@@ -76,13 +76,35 @@ public class GeofenceBR extends BroadcastReceiver {
                 return "enter";
             case Geofence.GEOFENCE_TRANSITION_EXIT:
                 return "exit";
+            case Geofence.GEOFENCE_TRANSITION_DWELL:
+                return "dwell";
             default:
                 return "unknown_transition";
         }
     }
 
 
+    private int getIntFromReqId(String reqId) {
+        switch(reqId) {
+            case "campus":
+                return 1;
+            case "Coop":
+                return 2;
+            case "Carrefour":
+                return 3;
+            case "Maurys":
+                return 4;
+            case "Google":
+                return 5;
+            case "Campus":
+                return 6;
+            case "StatuaNormale":
+                return 7;
+            default:
+                return 0;
 
+        }
+    }
 
 
 

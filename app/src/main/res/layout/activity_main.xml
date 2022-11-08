@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:text="START"
             android:backgroundTint="#1AEE02"
-            android:textSize="40dp"/>
+            android:textSize="20dp"/>
         <Button
             android:id="@+id/stop_geo"
             android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
             android:text="STOP"
             android:backgroundTint="#FB0303"
             android:layout_marginTop="30dp"
-            android:textSize="40dp"/>
+            android:textSize="20dp"/>
 
     </LinearLayout>
 

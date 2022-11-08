@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:key="geofencing_ps">
+
+    <Preference
+        android:key="new_search"
+        android:summary="La nuova ricerca eliminerà quelli già esistenti"
+        android:title="Scegli negozi"/>
+
+    <MultiSelectListPreference
+        android:key="remove_places"
+        android:persistent="false"
+        android:title="Elimina i luoghi"
+        android:summary="Seleziona i luoghi da eliminare"
+        android:enabled="false"/>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        android:key="active_places"
+        android:title="Luoghi attivi">
+
+
+    </PreferenceCategory>
+</PreferenceScreen>
