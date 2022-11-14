@@ -3,17 +3,33 @@ package it.unipi.di.sam.goshopping;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.DialogCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.android.volley.Request;
@@ -23,37 +39,62 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.LocationBias;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FetchPhotoResponse;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.intellij.lang.annotations.Language;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PlaceSearch extends AppCompatActivity {
 
+    private Location currentLocation = null;
+    private LocationManager locationManager;
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private static final String TAG = PlaceSearch.class.getSimpleName();
     private Handler handler = new Handler();
     private PlacePredictionAdapter adapter = new PlacePredictionAdapter();
 //    private Gson gson = new GsonBuilder().registerTypeAdapter(LatLng.class, new LatLongAdapter()).create();
 
-    private RequestQueue queue;
+ //   private RequestQueue queue;
     private PlacesClient placesClient;
     private AutocompleteSessionToken sessionToken;
+    private GeofencingClient geofencingClient;
+ //   private ArrayList<Geofence> geofenceList;
+    private PendingIntent geofencePendingIntent = null;
+
+    // Places API support structures
+    List<Place.Field> fields;
+    FetchPlaceRequest fetchPlaceRequest;
+    Task<FetchPlaceResponse> responseTask;
 
     private ViewAnimator viewAnimator;
     private ProgressBar progressBar;
@@ -64,18 +105,31 @@ public class PlaceSearch extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place_search);
-    //    setSupportActionBar(findViewById(R.id.toolbar));
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+
 
         // Setup Places Client
         if (!Places.isInitialized())
             Places.initialize(getApplicationContext(), apiKey);
 
+        if(geofencingClient == null)
+            geofencingClient = LocationServices.getGeofencingClient(this);
+
         // Initialize members
         progressBar = findViewById(R.id.progress_bar);
         viewAnimator = findViewById(R.id.view_animator);
         placesClient = Places.createClient(this);
-        queue = Volley.newRequestQueue(this);
         initRecyclerView();
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!checkPermissions())
+            requestPermissions();
     }
 
     @Override
@@ -123,47 +177,78 @@ public class PlaceSearch extends AppCompatActivity {
         });
     }
 
+
     private void initRecyclerView() {
         final RecyclerView recyclerView = findViewById(R.id.recycler_view);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
-        //adapter.setPlaceClickListener(this::geocodePlaceAndDisplay);
         adapter.setPlaceClickListener(place -> {
-            Log.d("Places", "place.getPlaceId(): "+place.getPlaceId());
-            Log.d("Places", "place.getDistanceMeters(): "+place.getDistanceMeters());
-            Log.d("Places", "place.getPlaceTypes(): "+place.getPlaceTypes());
-            Log.d("Places", "place.describeContents(): "+place.describeContents());
-            Log.d("Places", "place: "+place);
 
+            fields = new ArrayList<>();
+            fields.add(Place.Field.LAT_LNG); // extracting only LAT_LNG info because other info are included in "place" parameter
+            fetchPlaceRequest = FetchPlaceRequest.newInstance(place.getPlaceId(),fields);
+            responseTask = placesClient.fetchPlace(fetchPlaceRequest);
+            responseTask.addOnSuccessListener(fetchPlaceResponse -> {
+                LatLng latLng = fetchPlaceResponse.getPlace().getLatLng();
+                if(latLng == null) {
+                    Utils.showToast(this,"Si è verificato un errore, riprova");
+                    return;
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Vuoi aggiungerlo ai tuoi luoghi?");
+                builder.setMessage(place.getPrimaryText(null)+"\n("+place.getSecondaryText(null)+")");
+                builder.setPositiveButton("Aggiungi", (dialog, which) -> {
+                    MainActivity.db.insertGeofence(this,
+                            place.getPlaceId(),
+                            String.valueOf(place.getPrimaryText(null)),
+                            String.valueOf(place.getSecondaryText(null)),
+                            latLng.latitude, latLng.longitude);
+                    addGeofence(place.getPlaceId(), latLng);
+                    dialog.dismiss();
+                }).setNegativeButton("Annulla", (dialog, which) -> dialog.dismiss()).show();
+            }).addOnFailureListener(exception -> {
+                // TODO: just post a toast saying there was an error
+                Utils.showToast(this,"Si è verificato un errore, riprova");
+                Log.e("Places", "fetch place error: "+exception.getMessage());
+            });
         });
     }
 
-
+    @SuppressWarnings("MissingPermission") // FIXME: remove when i place if(fine location is granted)
     private void getPlacePredictions(String query) {
-        final LocationBias bias = RectangularBounds.newInstance(
-            new LatLng(22.458744, 88.208162), // SW lat, lng
-            new LatLng(22.730671, 88.524896) // NE lat, lng
-        );
 
+        // At this point if users has already granted location permission he will see the distance from
+        // each places, otherwise he will see only places name and address
+        if(checkPermissions()) {
+            // Get last know location, then listen updates. Uses network provider or fused provider in S+ Android version
+            String locationProvider = LocationManager.NETWORK_PROVIDER;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                locationProvider = LocationManager.FUSED_PROVIDER;
+            currentLocation = locationManager.getLastKnownLocation(locationProvider);
+            locationManager.requestLocationUpdates(locationProvider, 0, 0, location -> { currentLocation = location; });
+        }
+
+        LatLng origin;
+        if(currentLocation != null) origin = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        else origin = null;
 
         // Create a new programmatic Place Autocomplete request in Places SDK for Android
         final FindAutocompletePredictionsRequest newRequest = FindAutocompletePredictionsRequest
             .builder()
             .setSessionToken(sessionToken)
-            .setLocationBias(bias)
-            .setTypeFilter(TypeFilter.ESTABLISHMENT)
             .setQuery(query)
-            .setCountries("IN")
+            .setCountries("IT")  // check Locale?
+            .setOrigin(origin)
             .build();
 
-        // Perform autocomplete prediction request
+        // autocomplete prediction request
         placesClient.findAutocompletePredictions(newRequest)
             .addOnSuccessListener(response -> {
                 List<AutocompletePrediction> predictions = response.getAutocompletePredictions();
                 adapter.setPredictions(predictions);
-
                 progressBar.setIndeterminate(false);
                 viewAnimator.setDisplayedChild(predictions.isEmpty() ? 0 : 1);
             }).addOnFailureListener(exception -> {
@@ -174,42 +259,92 @@ public class PlaceSearch extends AppCompatActivity {
             });
     }
 
-/*
-    private void geocodePlaceAndDisplay(AutocompletePrediction placePrediction) {
-        // Construct the request URL
-
-        final String url = "https://maps.googleapis.com/maps/api/geocode/json?place_id=%s&key=%s";
-        final String requestURL = String.format(url, placePrediction.getPlaceId(), apiKey);
-
-        // Use the HTTP request URL for Geocoding API to get geographic coordinates for the place
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, requestURL, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            // Inspect the value of "results" and make sure it's not empty
-                            JSONArray results = response.getJSONArray("results");
-                            if(results.length() == 0) {
-                                Log.w(TAG, "No results from geocoding request");
-                                return;
-                            }
-                            GeocodingResult result = gson.fromJson(result.getString(0), GeocodingResult.class);
-                            displayDialog(placePrediction, result);
-                        } catch (JSONException e) { e.printStackTrace(); }
-                    }
-                }, error -> Log.e(TAG, "Request failed"));
-
+    @SuppressWarnings("MissingPermission")
+    private void addGeofence(String placeId, LatLng geofenceLatLng) {
+        Geofence geofence = buildGeofence(placeId,geofenceLatLng);
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder()
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER) // FIXME: this initial trigger must be removed
+                .addGeofence(geofence);
+        GeofencingRequest geofencingRequest = builder.build();
+        if(!checkPermissions())
+            requestPermissions();
+        else
+            geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent())
+                .addOnSuccessListener(unused -> { Log.d("geofences", "Success on adding geofences"); })
+                .addOnFailureListener(e -> { Log.e("geofences", "Failed adding geofences"); e.printStackTrace(); });
     }
 
-    private void displayDialog(AutocompletePrediction place, GeocodingResult result) {
-        new AlertDialog.Builder(this)
-                .setTitle(place.getPrimaryText(null))
-                .setMessage("Geocoding result:\n" + result.geometry.location)
-                .setPositiveButton(android.R.string.ok, null)
-                .show();
+    // FLAG_MUTABLE sets a warning as it requires API level 31, yet it works fine in Nexus 5 (API 27)
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it
+        if (geofencePendingIntent != null) return geofencePendingIntent;
+        Intent intent = new Intent(this, GeofenceBR.class);
+        return geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent,
+                PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
-*/
 
+    // fills the geofence list with all places in places hashmap
+    private Geofence buildGeofence(String placeId, LatLng geofenceLatLng) {
+        return new Geofence.Builder()
+                .setRequestId(placeId)
+                .setCircularRegion(geofenceLatLng.latitude, geofenceLatLng.longitude, Constants.Geofences.RADIUS)
+                .setExpirationDuration(Constants.Geofences.EXPIRATION_DURATION)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)
+                .setLoiteringDelay(Constants.Geofences.LOITERING_DELAY)
+                .setNotificationResponsiveness(Constants.Geofences.NOTIFICATION_RESPONSIVENESS)
+                .build();
+    }
+
+
+    // Checks if permission has been granted
+    private boolean checkPermissions() {
+        return (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    // ask for permission only if user denied it before but did not check "Don't ask again" checkbox
+    private void requestPermissions() {
+        boolean shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(PlaceSearch.this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+      // if (shouldProvideRationale) {
+            Snackbar.make(this, findViewById(android.R.id.content), getString(R.string.place_search_permission_request), Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.allow), view -> {
+                        ActivityCompat.requestPermissions(PlaceSearch.this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                REQUEST_PERMISSIONS_REQUEST_CODE);
+                    }).show();
+       /*     showSnackbar(R.string.place_search_permission_request, R.string.allow, view -> { // Request permission
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_PERMISSIONS_REQUEST_CODE);
+            }); */
+     //   }
+     //   else Log.e("logging", "not asking for permission because shouldProvideRationale is false");
+    }
+
+    // After getting FINE_LOCATION permission sends users to settings to grant BACKGROUND_LOCATION permission
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == REQUEST_PERMISSIONS_REQUEST_CODE && Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q) {
+            if(checkPermissions()) {
+                if(!(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+                            REQUEST_PERMISSIONS_REQUEST_CODE);
+                }
+            }
+        }
+    }
+
+    private void showSnackbar(final int mainTextStringId, final int actionStringId,View.OnClickListener listener) {
+        Snackbar.make(findViewById(android.R.id.content),getString(mainTextStringId), Snackbar.LENGTH_INDEFINITE)
+                .setAction(getString(actionStringId), listener).show();
+    }
 
 
 }
+
+
+
+

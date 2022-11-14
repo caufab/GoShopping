@@ -1,14 +1,20 @@
 package it.unipi.di.sam.goshopping;
 
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.PermissionChecker;
 
 public class Utils {
 
@@ -33,14 +39,15 @@ public class Utils {
      * Sends a new notification to the Notification Manager with a title, text, and the
      * pending intent to launch when users click on it
      */
-    public static void sendNotification(Context context, int notificationId, String title, String text, PendingIntent pendingIntent) {
+
+    public static void sendNotification(Context context, int notificationId, String title, String smallText, String bigText, PendingIntent pendingIntent) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_dashboard_black_24dp)
-                .setContentText(title)
-                .setContentText(text)
+                .setContentTitle(title)
+                .setContentText(smallText)
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText("LongerText "+text)); // TODO: parameter if needed
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(bigText)); // TODO: parameter if needed
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(notificationId, builder.build());
     }
@@ -51,4 +58,7 @@ public class Utils {
     }
 
 
+    public static void showToast(Context context, String s) {
+        Toast.makeText(context, s, Toast.LENGTH_LONG).show();
+    }
 }

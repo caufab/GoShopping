@@ -1,15 +1,12 @@
 package it.unipi.di.sam.goshopping;
 
 import android.app.Activity;
-import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
 
 import it.unipi.di.sam.goshopping.ui.cardlist.CLFragment;
 import it.unipi.di.sam.goshopping.ui.shoppinglist.SLFragment;
@@ -46,7 +43,7 @@ public class DbAccess extends Activity {
                         break;
                     case geofences_table_name:
                         q = "CREATE TABLE IF NOT EXISTS "+ geofences_table_name +
-                                " (_ID INTEGER PRIMARY KEY, name TEXT, latitude REAL, longitude REAL, radius REAL, exp_duration INTEGER, loitering_delay INTEGER)";
+                                " (_ID INTEGER PRIMARY KEY, place_id TEXT UNIQUE, name TEXT, address TEXT, latitude REAL, longitude REAL, radius REAL, exp_duration INTEGER, loitering_delay INTEGER)";
                         db.execSQL(q);
                         break;
                     default:
@@ -172,9 +169,11 @@ public class DbAccess extends Activity {
 
     // Methods for geofences
 
-    public long insertGeofence(String name, double latitude, double longitude) { // FIXME: need other params from GMaps Api
+    public void insertGeofence(Context context, String placeId, String name, String address, double latitude, double longitude) { // FIXME: need other params from GMaps Api
         ContentValues val = new ContentValues();
+        val.put("place_id", placeId);
         val.put("name", name);
+        val.put("address", address);
         val.put("latitude", latitude);
         val.put("longitude", longitude);
         val.put("radius", Constants.Geofences.RADIUS); // fixed values for now
@@ -182,13 +181,14 @@ public class DbAccess extends Activity {
         val.put("loitering_delay", Constants.Geofences.LOITERING_DELAY); // fixed values for now
         // TODO: thread handler
         SQLiteDatabase db = mOH.getWritableDatabase();
-        return db.insert(geofences_table_name, null, val);
+        db.insert(geofences_table_name, null, val);
+        // TODO: at the end of the thread insert make a Toast!
     }
 
-    public void removeGeofence(int id) { // remove by id or name?
+    public void removeGeofence(String placeId) { // remove by id or name?
         // TODO: thread handler
         SQLiteDatabase db = mOH.getWritableDatabase();
-        db.delete(geofences_table_name, "_ID="+id, null);
+        db.delete(geofences_table_name, "place_id='"+placeId+"'", null);
     }
 
     public Cursor getGeofences() {

@@ -4,6 +4,21 @@
     android:key="geofencing_ps">
 
     <Preference
+        app:isPreferenceVisible="true"
+        android:title="Abilita i permessi"
+        android:key="permission_na"
+        android:summary="Alcuni permessi non sono abilitati"/>
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="geofencing_switch"
+        android:persistent="true"
+        android:title="Abilita geofencing"
+        android:summaryOff="Geofencing è disabilitato"
+        android:summaryOn="Geofencing è attivo"/>
+
+
+    <Preference
         android:key="new_search"
         android:summary="La nuova ricerca eliminerà quelli già esistenti"
         android:title="Scegli negozi"/>

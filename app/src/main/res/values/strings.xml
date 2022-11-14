@@ -25,4 +25,7 @@
     <string name="geofencing_settings_header">Geofencing</string>
     <string name="title_activity_search_stores">SearchStores</string>
     <string name="delete_geofence_place">Elimina il luogo</string>
+    <string name="place_search_permission_request">"Per utilizzare questa funzionalità concedi i permessi e clicca su 'Concedi sempre'"</string>
+    <string name="allow">Concedi</string>
+    <string name="title_activity_geofence_settings">GeofenceSettings</string>
 </resources>

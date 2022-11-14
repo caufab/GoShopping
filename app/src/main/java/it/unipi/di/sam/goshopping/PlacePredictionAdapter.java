@@ -12,6 +12,7 @@ import com.google.android.libraries.places.api.model.AutocompletePrediction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class PlacePredictionAdapter extends RecyclerView.Adapter<PlacePredictionAdapter.PlacePredictionViewHolder> {
 
@@ -20,18 +21,34 @@ public class PlacePredictionAdapter extends RecyclerView.Adapter<PlacePrediction
 
         private final TextView title;
         private final TextView address;
+        private final TextView distance;
 
         public PlacePredictionViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.text_view_title);
             address = itemView.findViewById(R.id.text_view_address);
+            distance = itemView.findViewById(R.id.distance_text);
         }
 
         public void setPrediction(AutocompletePrediction prediction) {
             title.setText(prediction.getPrimaryText(null));
             address.setText(prediction.getSecondaryText(null));
+            if(prediction.getDistanceMeters() != null)
+                distance.setText(formatDistanceForViewHolder(prediction.getDistanceMeters()));
         }
     }
+
+    private static String formatDistanceForViewHolder(int distanceMeters) {
+        if(distanceMeters<=500)
+            return distanceMeters+"\nm";
+        else if(distanceMeters<10000)
+            return String.format(Locale.ITALY,"%.2f\nKm", distanceMeters * 0.001);
+        else if(distanceMeters<=999999)
+            return String.format(Locale.ITALY,"%.0f\nKm", distanceMeters * 0.001);
+        else
+            return ">999\nkm";
+    }
+
 
     interface OnPlaceClickListener {
         void onPlaceClicked(AutocompletePrediction place);

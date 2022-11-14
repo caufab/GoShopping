@@ -53,7 +53,7 @@
             android:layout_margin="16dp"
             android:gravity="center"
             android:lineSpacingMultiplier="1.15"
-            android:text="This activity demonstrates as-you-type programmatic place predictions. Tap on the search icon on the toolbar and search for a place"
+            android:text="Effettua una ricerca con la barra in alto e clicca sul luogo che vuoi aggiungere"
             android:textSize="20sp" />
 
         <androidx.recyclerview.widget.RecyclerView
