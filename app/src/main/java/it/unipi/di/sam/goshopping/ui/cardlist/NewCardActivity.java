@@ -6,14 +6,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.zxing.BarcodeFormat;
@@ -35,7 +39,9 @@ public class NewCardActivity extends AppCompatActivity {
     private Button cancelBtn;
     private ImageButton btn_scan;
     private Button remCardBtn;
-
+    private RadioGroup radioGroup;
+    private RadioButton radioButton;
+    private int color;
 
 
     @Override
@@ -52,6 +58,7 @@ public class NewCardActivity extends AppCompatActivity {
         btn_scan = findViewById(R.id.scan_btn);
         cardName = findViewById(R.id.card_name);
         remCardBtn = findViewById(R.id.rem_card_btn);
+        radioGroup = (RadioGroup) findViewById(R.id.color_radio_group);
 
 
         Bundle b = getIntent().getExtras();
@@ -60,6 +67,7 @@ public class NewCardActivity extends AppCompatActivity {
             cardName.setText(b.getString("name"));
             barcodeTV.setText(b.getString("code"));
             barcodeFormat = b.getString("format");
+
             addCardBtn.setText("Aggiorna");
             remCardBtn.setVisibility(View.VISIBLE);
 
@@ -110,14 +118,21 @@ public class NewCardActivity extends AppCompatActivity {
 
         });
 
+
+
         // go back
         cancelBtn.setOnClickListener(view -> finish());
         // add new card to database
         addCardBtn.setOnClickListener(view -> {
+            radioButton = (RadioButton) findViewById(radioGroup.getCheckedRadioButtonId());
+            color = radioButton.getButtonTintList().getDefaultColor();
+            Log.e("logging", ""+color);
+
+
             if (b == null) // add mode
-                MainActivity.db.addCard(cardName.getText().toString(), barcodeET.getText().toString(), barcodeFormat);
-            else // edit mode
-                MainActivity.db.updateCard(b.getInt("id"), cardName.getText().toString(), barcodeET.getText().toString(), barcodeFormat, b.getInt("rv_pos"));
+                MainActivity.db.addCard(cardName.getText().toString(), barcodeET.getText().toString(), barcodeFormat, color);
+            else // edit mode/
+                MainActivity.db.updateCard(b.getInt("id"), cardName.getText().toString(), barcodeET.getText().toString(), barcodeFormat, color, b.getInt("rv_pos"));
             finish();
         });
         // barcode has changed

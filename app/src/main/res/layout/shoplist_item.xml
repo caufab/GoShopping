@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:id="@+id/card_view"
+        app:cardElevation="2dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:clickable="true">
 

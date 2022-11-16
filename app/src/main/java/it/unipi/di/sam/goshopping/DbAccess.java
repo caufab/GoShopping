@@ -20,6 +20,9 @@ public class DbAccess extends Activity {
     public static final String geofences_table_name = "geofences";
     public static final int DATABASE_VERSION = 2;
 
+
+
+
     // Database creator
     private static class mSQLiteOH extends SQLiteOpenHelper {
 
@@ -27,6 +30,7 @@ public class DbAccess extends Activity {
              super(context, DATABASE_NAME, null, DATABASE_VERSION);
          }
 
+        // TODO: add contract and use constants for all names
         public void createTableINE(SQLiteDatabase db, String table_name) {
             Thread T = new Thread(() -> {
                 String q = "";
@@ -38,7 +42,7 @@ public class DbAccess extends Activity {
                         break;
                     case cardlist_table_name:
                         q = "CREATE TABLE IF NOT EXISTS "+ cardlist_table_name +
-                                " (_ID INTEGER PRIMARY KEY, name TEXT, code TEXT, format TEXT, used_times INTEGER)";
+                                " (_ID INTEGER PRIMARY KEY, name TEXT, code TEXT, format TEXT, used_times INTEGER, color INTEGER)";
                         db.execSQL(q);
                         break;
                     case geofences_table_name:
@@ -55,13 +59,14 @@ public class DbAccess extends Activity {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            createTableINE(db,shoppinglist_table_name);
+            createTableINE(db, shoppinglist_table_name);
             createTableINE(db, cardlist_table_name);
             createTableINE(db, geofences_table_name);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
             Log.w("DB", "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
             // TODO: start thread
@@ -86,35 +91,52 @@ public class DbAccess extends Activity {
 
     // Methods for card list
 
-    public Cursor getCards() {
-        // TODO: thread on query?
-        SQLiteDatabase db = mOH.getReadableDatabase();
-        return db.query(cardlist_table_name, null, null, null, null, null, "used_times");
-    }
-
-    public void updateCard(int id, String name, String code, String barcodeFormat, int cardRvPos) {
-        ContentValues val = new ContentValues();
-        val.put("name", name);
-        val.put("code", code);
-        val.put("format", barcodeFormat);
+    public void clQuery() {
         Thread T = new Thread(() -> {
-            SQLiteDatabase db = mOH.getWritableDatabase();
-            db.update(cardlist_table_name, val, "_ID="+id, null);
-            runOnUiThread(new CLFragment.RefreshRVOnCardUpdate(cardRvPos));
+            SQLiteDatabase db = mOH.getReadableDatabase();
+            Cursor cursor = db.query(cardlist_table_name, null, null, null, null, null, "used_times DESC");
+            runOnUiThread(new CLFragment.UpdateCursor(cursor, "set_adapter"));
         });
         T.start();
     }
 
-    public void addCard(String name, String code, String barcodeFormat) {
-        ContentValues val = new ContentValues();
-        val.put("name", name);
-        val.put("code", code);
-        val.put("format", barcodeFormat);
-        val.put("used_times", 0);
+    public void updateCard(int id, String name, String code, String barcodeFormat, int color, int cardRvPos) {
         Thread T = new Thread(() -> {
+            ContentValues val = new ContentValues();
+            val.put("name", name);
+            val.put("code", code);
+            val.put("format", barcodeFormat);
+            val.put("color", color);
+            SQLiteDatabase db = mOH.getWritableDatabase();
+            db.update(cardlist_table_name, val, "_ID="+id, null);
+            Cursor cursor = db.query(cardlist_table_name, null, null, null, null, null, "used_times");
+            runOnUiThread(new CLFragment.UpdateCursor(cursor, "update", cardRvPos));
+        });
+        T.start();
+    }
+
+    public void addCard(String name, String code, String barcodeFormat, int color) {
+        Thread T = new Thread(() -> {
+            ContentValues val = new ContentValues();
+            val.put("name", name);
+            val.put("code", code);
+            val.put("format", barcodeFormat);
+            val.put("used_times", 0);
+            val.put("color", color);
             SQLiteDatabase db = mOH.getWritableDatabase();
             db.insert(cardlist_table_name, null, val);
-            runOnUiThread(new CLFragment.RefreshRVOnCardInsert());
+            Cursor cursor = db.query(cardlist_table_name, null, null, null, null, null, "used_times");
+            runOnUiThread(new CLFragment.UpdateCursor(cursor, "insert"));
+        });
+        T.start();
+    }
+
+    public void incrementCardUsedTimes(int id, int newUsedTimes) {
+        Thread T = new Thread(() -> {
+            ContentValues val = new ContentValues();
+            val.put("used_times", newUsedTimes);
+            SQLiteDatabase db = mOH.getWritableDatabase();
+            db.update(cardlist_table_name, val, "_ID="+id, null);
         });
         T.start();
     }
@@ -123,7 +145,8 @@ public class DbAccess extends Activity {
         Thread T = new Thread(() -> {
             SQLiteDatabase db = mOH.getWritableDatabase();
             db.delete(cardlist_table_name, "_ID="+id, null);
-            runOnUiThread(new CLFragment.RefreshRVOnCardRemoved(cardRvPos));
+            Cursor cursor = db.query(cardlist_table_name, null, null, null, null, null, "used_times");
+            runOnUiThread(new CLFragment.UpdateCursor(cursor, "remove", cardRvPos));
         });
         T.start();
     }
@@ -135,24 +158,34 @@ public class DbAccess extends Activity {
         Thread T = new Thread(() -> {
             SQLiteDatabase db = mOH.getWritableDatabase();
             db.insert(table, nullColumnHack, val);
-            runOnUiThread(new SLFragment.RefreshRVOnInsert());
+            Cursor cursor = db.query(shoppinglist_table_name, null, null, null, null, null, "_ID");
+            runOnUiThread(new SLFragment.UpdateCursor(cursor,"insert"));
         });
         T.start();
     }
 
-    public Cursor query(String table) {
-        // TODO: add thread handler
+    public Cursor getTopItems(int maxItems) {
         SQLiteDatabase db = mOH.getReadableDatabase();
-        return db.query(shoppinglist_table_name, null, null, null, null, null, "_ID");
+        return db.query(shoppinglist_table_name, null, null, null, null, null, "_ID", String.valueOf(maxItems));
     }
 
-    public void updateItem (int id, int adapterPos, String newItemVal) {
+    public void slQuery() {
+        Thread T = new Thread(() -> {
+            SQLiteDatabase db = mOH.getReadableDatabase();
+            Cursor cursor = db.query(shoppinglist_table_name, null, null, null, null, null, "_ID");
+            runOnUiThread(new SLFragment.UpdateCursor(cursor, "set_adapter"));
+        });
+        T.start();
+    }
+
+    public void updateItem (int id, int itemPosition, String newItemVal) {
         Thread T = new Thread(() -> {
             SQLiteDatabase db = mOH.getWritableDatabase();
             ContentValues val = new ContentValues();
             val.put("item", newItemVal);
             db.update(shoppinglist_table_name, val, "_ID="+id, null);
-            runOnUiThread(new SLFragment.RefreshRVOnUpdate(adapterPos));
+            Cursor cursor = db.query(shoppinglist_table_name, null, null, null, null, null, "_ID");
+            runOnUiThread(new SLFragment.UpdateCursor(cursor,"update", itemPosition));
         });
         T.start();
     }
@@ -161,7 +194,8 @@ public class DbAccess extends Activity {
         Thread T = new Thread(() -> {
             SQLiteDatabase db = mOH.getWritableDatabase();
             db.delete(shoppinglist_table_name,"_ID="+id,null);
-            runOnUiThread(new SLFragment.RefreshRVOnRemoved(itemPosition));
+            Cursor cursor = db.query(shoppinglist_table_name, null, null, null, null, null, "_ID");
+            runOnUiThread(new SLFragment.UpdateCursor(cursor,"remove", itemPosition));
         });
         T.start();
     }
@@ -169,33 +203,58 @@ public class DbAccess extends Activity {
 
     // Methods for geofences
 
-    public void insertGeofence(Context context, String placeId, String name, String address, double latitude, double longitude) { // FIXME: need other params from GMaps Api
-        ContentValues val = new ContentValues();
-        val.put("place_id", placeId);
-        val.put("name", name);
-        val.put("address", address);
-        val.put("latitude", latitude);
-        val.put("longitude", longitude);
-        val.put("radius", Constants.Geofences.RADIUS); // fixed values for now
-        val.put("exp_duration", Constants.Geofences.EXPIRATION_DURATION); // fixed values for now
-        val.put("loitering_delay", Constants.Geofences.LOITERING_DELAY); // fixed values for now
-        // TODO: thread handler
-        SQLiteDatabase db = mOH.getWritableDatabase();
-        db.insert(geofences_table_name, null, val);
-        // TODO: at the end of the thread insert make a Toast!
+    public void insertGeofence(String placeId, String name, String address, double latitude, double longitude) {
+        Thread T = new Thread(() -> {
+            ContentValues val = new ContentValues();
+            val.put("place_id", placeId);
+            val.put("name", name);
+            val.put("address", address);
+            val.put("latitude", latitude);
+            val.put("longitude", longitude);
+            val.put("radius", Constants.Geofences.RADIUS); // fixed values for now
+            val.put("exp_duration", Constants.Geofences.EXPIRATION_DURATION); // fixed values for now
+            val.put("loitering_delay", Constants.Geofences.LOITERING_DELAY); // fixed values for now
+            SQLiteDatabase db = mOH.getWritableDatabase();
+            db.insert(geofences_table_name, null, val);
+        });
+        T.start();
+
     }
 
-    public void removeGeofence(String placeId) { // remove by id or name?
-        // TODO: thread handler
-        SQLiteDatabase db = mOH.getWritableDatabase();
-        db.delete(geofences_table_name, "place_id='"+placeId+"'", null);
+    public void removeGeofence(String placeId) {
+        Thread T = new Thread(() -> {
+            SQLiteDatabase db = mOH.getWritableDatabase();
+            db.delete(geofences_table_name, "place_id='"+placeId+"'", null);
+        });
+        T.start();
+
     }
 
-    public Cursor getGeofences() {
-        // TODO: thread handler
+    public void getGeofences() {
+        Thread T = new Thread(() -> {
+            SQLiteDatabase db = mOH.getReadableDatabase();
+            Cursor cursor = db.query(geofences_table_name, null, null, null, null, null, null);
+            runOnUiThread(new SettingsActivity.GeofencingFragment.ShowPlaces(cursor));
+        });
+        T.start();
+    }
+
+    public Cursor getGeofenceCursor() {
         SQLiteDatabase db = mOH.getReadableDatabase();
         return db.query(geofences_table_name, null, null, null, null, null, null);
     }
+
+    public void getGeofenceCount() {
+        Thread T = new Thread(() -> {
+            Cursor cursor = getGeofenceCursor();
+            runOnUiThread(new PlaceSearch.SetGeofenceCount(cursor.getCount()));
+            cursor.close();
+        });
+        T.start();
+    }
+
+
+
 
 }
 

@@ -15,6 +15,7 @@
 
     <color name="bottomBar">#FFFFFF</color>
 
+    <color name="iconOnBackground">#FF000000</color>
 
     <!--   <color name="buttons">#303030</color>-->
 

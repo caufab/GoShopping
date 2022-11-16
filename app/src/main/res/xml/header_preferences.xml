@@ -1,0 +1,47 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+        <Preference
+            app:fragment="it.unipi.di.sam.goshopping.SettingsActivity$MessagesFragment"
+            app:icon="@drawable/messages"
+            app:key="messages_header"
+            app:title="@string/ages_header" />
+
+        <Preference
+            app:fragment="it.unipi.di.sam.goshopping.SettingsActivity$SyncFragment"
+            app:icon="@drawable/sync"
+            app:key="sync_header"
+            app:title="@string/sync_header" />
+    -->
+    <Preference
+        app:fragment="it.unipi.di.sam.goshopping.SettingsActivity$GeofencingFragment"
+        app:icon="@drawable/ic_baseline_place_24"
+        app:iconSpaceReserved="false"
+        app:key="sync_header"
+
+        app:title="@string/geofencing_settings_header" />
+
+    <ListPreference
+        app:key="theme_preference"
+        app:title="Aspetto"
+        android:persistent="true"
+        android:icon="@drawable/ic_baseline_palette_24"
+        app:defaultValue="systems"
+        app:entries="@array/theme_entries"
+        app:entryValues="@array/theme_values"
+        android:dialogIcon="@drawable/ic_baseline_palette_24"
+        app:useSimpleSummaryProvider="true"/>
+
+    <Preference
+        app:key="backup_preference"
+        app:title="Backup"
+        app:icon="@drawable/ic_baseline_backup_24"
+        app:summary="Effettua il backup su Google Drive"/>
+
+    <Preference
+        app:key="info_preference"
+        app:icon="@drawable/ic_baseline_info_24"
+        app:title="Informazioni"/>
+
+
+</PreferenceScreen>

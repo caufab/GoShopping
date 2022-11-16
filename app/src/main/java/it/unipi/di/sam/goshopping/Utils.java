@@ -39,7 +39,7 @@ public class Utils {
      * Sends a new notification to the Notification Manager with a title, text, and the
      * pending intent to launch when users click on it
      */
-
+    @SuppressWarnings("MissingPermission")
     public static void sendNotification(Context context, int notificationId, String title, String smallText, String bigText, PendingIntent pendingIntent) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_dashboard_black_24dp)
@@ -49,6 +49,7 @@ public class Utils {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(bigText)); // TODO: parameter if needed
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        builder.setAutoCancel(true);
         notificationManager.notify(notificationId, builder.build());
     }
 

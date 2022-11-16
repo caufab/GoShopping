@@ -24,6 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.w3c.dom.Text;
 
+import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
 
 public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
@@ -35,8 +36,8 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
         String code;
         String name;
         String barcodeFormat;
-        int id;
-        Color bgColor;
+        int id, usedTimes;
+        int bgColor;
 
         //ColorUtils.calculateLuminance(Color.green(1));
 
@@ -69,18 +70,15 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
             holder.id = CLFragment.cursor.getInt(CLFragment.cursor.getColumnIndexOrThrow("_ID"));
             holder.name = CLFragment.cursor.getString(CLFragment.cursor.getColumnIndexOrThrow("name"));
             holder.barcodeFormat = CLFragment.cursor.getString(CLFragment.cursor.getColumnIndexOrThrow("format"));
+            holder.usedTimes = CLFragment.cursor.getInt(CLFragment.cursor.getColumnIndexOrThrow("used_times"));
+            holder.bgColor = CLFragment.cursor.getInt(CLFragment.cursor.getColumnIndexOrThrow("color"));
         }
 
         holder.tv.setText(holder.name);
-
-        holder.cv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: show card bar code and number
-                // TODO: increment number of used times in db
-                //CLFragment.showCard(view.getContext(), holder);
-                showCard(holder);
-            }
+        holder.cv.setCardBackgroundColor(holder.bgColor);
+        holder.cv.setOnClickListener(view -> {
+            showCard(holder);
+            MainActivity.db.incrementCardUsedTimes(holder.id, holder.usedTimes+1);
         });
 
     }
@@ -94,9 +92,9 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
         TextView code = CLFragment.root.findViewById(R.id.barcode_text);
         FloatingActionButton fabEdit = CLFragment.root.findViewById(R.id.edit_card_fab);
 
-
         cardName.setText(holder.name);
         code.setText(holder.code);
+
         overlay.setVisibility(View.VISIBLE);
         popupCL.setVisibility(View.VISIBLE);
 
@@ -116,20 +114,17 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
         CLFragment.fabAdd.setVisibility(View.GONE);
         fabEdit.setVisibility(View.VISIBLE);
 
-        fabEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), NewCardActivity.class);
-                Bundle b = new Bundle();
-                b.putInt("id", holder.id);
-                b.putInt("rv_pos", holder.getAdapterPosition());
-                b.putString("name", holder.name);
-                b.putString("code", holder.code);
-                b.putString("format", holder.barcodeFormat);
-                intent.putExtras(b);
-                view.getContext().startActivity(intent);
-                backToFragment(overlay,popupCL,barcodeImageView,fabEdit);
-            }
+        fabEdit.setOnClickListener(view -> {
+            Intent intent = new Intent(view.getContext(), NewCardActivity.class);
+            Bundle b = new Bundle();
+            b.putInt("id", holder.id);
+            b.putInt("rv_pos", holder.getAdapterPosition());
+            b.putString("name", holder.name);
+            b.putString("code", holder.code);
+            b.putString("format", holder.barcodeFormat);
+            intent.putExtras(b);
+            view.getContext().startActivity(intent);
+            backToFragment(overlay,popupCL,barcodeImageView,fabEdit);
         });
 
         overlay.setOnClickListener(view -> backToFragment(overlay,popupCL, barcodeImageView,fabEdit));

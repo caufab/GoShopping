@@ -16,5 +16,6 @@
 
     <color name="bottomBar">#303030</color>
 
+    <color name="iconOnBackground">#FFFFFFFF</color>
 
 </resources>

@@ -3,6 +3,7 @@ package it.unipi.di.sam.goshopping;
 import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
@@ -21,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -53,7 +56,7 @@ import it.unipi.di.sam.goshopping.R;
 public class SettingsActivity extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
 
-    private static final String TITLE_TAG = "settingsActivityTitle";
+    private static final String TITLE_TAG = "Impostazioni";
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     @Override
@@ -90,16 +93,6 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
         return super.onSupportNavigateUp();
     }
 
-    /* TODO: will this be sufficient to "exit" from settings activity?
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-     */
 
     @Override
     public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
@@ -109,7 +102,6 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                 getClassLoader(),
                 pref.getFragment());
         fragment.setArguments(args);
-        fragment.setTargetFragment(caller, 0);
         // Replace the existing Fragment with the new Fragment
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.settings, fragment)
@@ -119,13 +111,35 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
         return true;
     }
 
+
     public static class HeaderFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.header_preferences, rootKey);
+
+            ListPreference themePref = findPreference("theme_preference");
+            themePref.setOnPreferenceChangeListener((preference, newValue) -> {
+                Log.e("logging", "new value: "+newValue.toString());
+
+                switch (newValue.toString()) {
+                    case "light":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                        break;
+                    case "dark":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                        break;
+                    case "systems":
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                        break;
+                }
+
+                return true;
+            });
+
         }
     }
 
+    /*
     public static class MessagesFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -139,18 +153,21 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
             setPreferencesFromResource(R.xml.sync_preferences, rootKey);
         }
     }
-
+    */
 
     // FIXME: try to extract this class into a separate file
     public static class GeofencingFragment extends PreferenceFragmentCompat {
 
 
         private static GeofencingClient mGeofencingClient;
-        private Preference geofencingSwitch, permissionNA;
+        private Preference geofencingSwitch;
+        private static Preference newSearch;
+        private Preference permissionNA;
         private SharedPreferences sharedPreferences;
 
-        PreferenceCategory activePlaces;
-        Cursor cursor;
+        static PreferenceCategory activePlaces;
+        static Cursor cursor;
+        static int count;
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -159,7 +176,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
             if(mGeofencingClient == null)
                 mGeofencingClient = LocationServices.getGeofencingClient(getContext());
 
-            Preference newSearch = findPreference("new_search");
+            newSearch = findPreference("new_search");
             newSearch.setOnPreferenceClickListener(preference -> {
                 startActivity(new Intent(getContext(), PlaceSearch.class));
                 return false;
@@ -195,6 +212,44 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
         }
 
 
+        public static class ShowPlaces implements Runnable{
+            public ShowPlaces(Cursor placesCursor) { cursor = placesCursor; }
+            @Override
+            public void run() {
+                activePlaces.removeAll();
+                count = cursor.getCount();
+                activePlaces.setTitle("Luoghi attivi ("+count+")");
+                newSearch.setEnabled(count < Constants.Geofences.MAX_GEOFENCES); // enable new search button only if active geofences are < 10
+                while(cursor.moveToNext()) {
+                    Preference place = new Preference(activePlaces.getContext());
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                    String address = cursor.getString((cursor.getColumnIndexOrThrow("address")));
+                    String placeId = cursor.getString(cursor.getColumnIndexOrThrow("place_id"));
+                    place.setTitle(name);
+                    place.setSummary(address);
+                    place.setIconSpaceReserved(false);
+                    place.setKey(String.valueOf(placeId)); // meant to be and int
+                    place.setPersistent(false);
+                    place.setOnPreferenceClickListener(preference -> { // Dialog to confirm delete
+                        AlertDialog.Builder builder = new AlertDialog.Builder(preference.getContext());
+                        builder.setTitle("Conferma eliminazione");
+                        builder.setMessage("Sei sicuro di voler eliminare "+name);
+                        builder.setPositiveButton("Elimina", (dialogInterface, i) -> {
+                            preference.setEnabled(false);
+                            MainActivity.db.removeGeofence(placeId);
+                            removeGeofenceId(placeId);
+                            activePlaces.removePreference(preference);
+                            count--;
+                            activePlaces.setTitle("Luoghi attivi ("+count+")");
+                            if(!newSearch.isEnabled()) newSearch.setEnabled(true); // re-enable new search button
+                            dialogInterface.dismiss();
+                        }).setNegativeButton("Annulla", (dialogInterface, i) -> dialogInterface.dismiss()).show();
+                        return false;
+                    });
+                    activePlaces.addPreference(place);
+                }
+            }
+        }
 
         @Override
         public void onResume() {
@@ -203,55 +258,27 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                 startActivity(new Intent(getContext(), MainActivity.class));
                 return;
             }
+            MainActivity.db.getGeofences();
 
             if(!checkFinePosPermission() || !checkBgPosPermission() || !checkNotifPermission()) {
                 sharedPreferences.edit().putBoolean("geofencing_switch", false).apply();
                 geofencingSwitch.setDefaultValue(false);
                 geofencingSwitch.setEnabled(false);
                 permissionNA.setVisible(true);
-
             } else {
                 permissionNA.setVisible(false);
                 geofencingSwitch.setEnabled(true);
             }
 
-
-            activePlaces.removeAll();
-            cursor = MainActivity.db.getGeofences();
-            while(cursor.moveToNext()) {
-                Preference place = new Preference(getContext());
-                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
-                String address = cursor.getString((cursor.getColumnIndexOrThrow("address")));
-                String placeId = cursor.getString(cursor.getColumnIndexOrThrow("place_id"));
-                place.setTitle(name);
-                place.setSummary(address);
-                place.setKey(String.valueOf(placeId)); // meant to be and int
-                place.setPersistent(false);
-                place.setOnPreferenceClickListener(preference -> { // Dialog to confirm delete
-                    AlertDialog.Builder builder = new AlertDialog.Builder(preference.getContext());
-                    builder.setTitle("Conferma eliminazione");
-                    builder.setMessage("Sei sicuro di voler eliminare "+name);
-                    builder.setPositiveButton("Elimina", (dialogInterface, i) -> {
-                        preference.setEnabled(false);
-                        MainActivity.db.removeGeofence(placeId);
-                        removeGeofenceId(placeId);
-                        activePlaces.removePreference(preference);
-                        dialogInterface.dismiss();
-                    }).setNegativeButton("Annulla", (dialogInterface, i) -> dialogInterface.dismiss()).show();
-                    return false;
-                });
-
-                activePlaces.addPreference(place);
-            }
         }
 
 
-        private void removeGeofenceId(String geofenceId) {
+        private static void removeGeofenceId(String geofenceId) {
             List<String> geofenceIdList = new ArrayList<>();
             geofenceIdList.add(geofenceId);
             mGeofencingClient.removeGeofences(geofenceIdList)
                     .addOnSuccessListener(unused -> { Log.d("Geofencing", "Success on removing geofence"); })
-                    .addOnFailureListener(getActivity(), e -> { Log.d("Geofencing", "Failed to removing geofence"); e.printStackTrace(); } );
+                    .addOnFailureListener(e -> { Log.d("Geofencing", "Failed to removing geofence"); e.printStackTrace(); } );
         }
 
 

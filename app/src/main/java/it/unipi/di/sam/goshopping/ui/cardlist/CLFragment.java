@@ -34,22 +34,50 @@ public class CLFragment extends Fragment {
 
         bcUtils = new BarcodeUtils();
 
-        // get cursor
         CLA = new CLAdapter();
-
-        try { cursor = MainActivity.db.getCards(); }
-        catch (Exception e) {
-            Log.d("cursorException", "e.getMessage: "+e.getMessage() );
-            // TODO: do something about it
-        }
 
     }
 
+    public static class UpdateCursor implements Runnable {
+        private final String request;
+        private int pos;
+        public UpdateCursor(Cursor updatedCursor, String updateRequest) {
+            cursor = updatedCursor;
+            request = updateRequest;
+        }
+        public UpdateCursor(Cursor updatedCursor, String updateRequest, int itemPosition) {
+            cursor = updatedCursor;
+            request = updateRequest;
+            pos = itemPosition;
+        }
+
+        @Override
+        public void run() {
+            switch(request) {
+                case "set_adapter":
+                    rvc.setAdapter(CLA);
+                    break;
+                case "insert":
+                    pos=cursor.getCount()-1;
+                    CLA.notifyItemInserted(pos);
+                    rvc.scrollToPosition(pos);
+                    break;
+                case "update":
+                    CLA.notifyItemChanged(pos);
+                    rvc.scrollToPosition(pos);
+                    break;
+                case "remove":
+                    CLA.notifyItemRemoved(pos);
+                    break;
+                default:
+                    break;
+            }
+
+        }
+    }
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        //root = inflater.inflate(R.layout.fragment_shoppinglist, container, false);
 
         binding = FragmentFicardlistBinding.inflate(inflater, container, false);
         root = binding.getRoot();
@@ -58,61 +86,20 @@ public class CLFragment extends Fragment {
         rvc.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rvc.setLayoutManager(llm);
-        rvc.setAdapter(CLA);
 
+        MainActivity.db.clQuery();
 
         fabAdd = (FloatingActionButton) root.findViewById(R.id.add_card_fab);
-        fabAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent addNewCard = new Intent(getContext(), NewCardActivity.class);
-                startActivity(addNewCard);
-            }
-        });
+        fabAdd.setOnClickListener(view -> startActivity(new Intent(getContext(), NewCardActivity.class)));
 
         return root;
     }
-
-
-    public static class RefreshRVOnCardInsert implements Runnable {
-        @Override
-        public void run() {
-            cursor = MainActivity.db.getCards();
-            int p=cursor.getCount()-1;
-            CLA.notifyItemInserted(p);
-            rvc.scrollToPosition(p);
-        }
-    }
-
-    public static class RefreshRVOnCardUpdate implements Runnable {
-        private final int p;
-        public RefreshRVOnCardUpdate(int position) { p = position; }
-        @Override
-        public void run() {
-            cursor = MainActivity.db.getCards();
-            CLA.notifyItemChanged(p);
-            rvc.scrollToPosition(p);
-        }
-    }
-
-
-    public static class RefreshRVOnCardRemoved implements Runnable {
-        private final int p;
-        public RefreshRVOnCardRemoved(int position) { p = position; }
-        @Override
-        public void run() {
-            cursor = MainActivity.db.getCards();
-            CLA.notifyItemRemoved(p);
-        }
-    }
-
 
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
     }
-
 
 
 

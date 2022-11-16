@@ -19,7 +19,12 @@
 
         <item name="android:navigationBarColor">@color/black</item>
 
+        <!--
+
         <item name="navigationIcon">@color/black</item>
+
+        -->
+
 
     <!--    <item name="android:actionBarStyle">@style/Theme.GoShopping.NoActionBar</item> -->
 

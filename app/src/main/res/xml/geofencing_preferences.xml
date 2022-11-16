@@ -3,15 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:key="geofencing_ps">
 
+
+
     <Preference
-        app:isPreferenceVisible="true"
+        app:isPreferenceVisible="false"
         android:title="Abilita i permessi"
+        app:iconSpaceReserved="false"
         android:key="permission_na"
         android:summary="Alcuni permessi non sono abilitati"/>
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="geofencing_switch"
+        app:iconSpaceReserved="false"
         android:persistent="true"
         android:title="Abilita geofencing"
         android:summaryOff="Geofencing è disabilitato"
@@ -20,21 +24,16 @@
 
     <Preference
         android:key="new_search"
-        android:summary="La nuova ricerca eliminerà quelli già esistenti"
+        app:iconSpaceReserved="false"
+        android:summary="Puoi aggiungere fino a 10 negozi"
         android:title="Scegli negozi"/>
 
-    <MultiSelectListPreference
-        android:key="remove_places"
-        android:persistent="false"
-        android:title="Elimina i luoghi"
-        android:summary="Seleziona i luoghi da eliminare"
-        android:enabled="false"/>
+    <!--  scegliere giuste parole: reset può far intendere cancellazione totale (update?) -->
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
         android:key="active_places"
         android:title="Luoghi attivi">
-
 
     </PreferenceCategory>
 </PreferenceScreen>

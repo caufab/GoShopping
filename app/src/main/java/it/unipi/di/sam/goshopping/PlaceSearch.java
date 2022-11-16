@@ -1,6 +1,7 @@
 package it.unipi.di.sam.goshopping;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -17,6 +18,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
@@ -73,6 +75,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PlaceSearch extends AppCompatActivity {
 
@@ -82,13 +85,11 @@ public class PlaceSearch extends AppCompatActivity {
     private static final String TAG = PlaceSearch.class.getSimpleName();
     private Handler handler = new Handler();
     private PlacePredictionAdapter adapter = new PlacePredictionAdapter();
-//    private Gson gson = new GsonBuilder().registerTypeAdapter(LatLng.class, new LatLongAdapter()).create();
 
- //   private RequestQueue queue;
+
     private PlacesClient placesClient;
     private AutocompleteSessionToken sessionToken;
     private GeofencingClient geofencingClient;
- //   private ArrayList<Geofence> geofenceList;
     private PendingIntent geofencePendingIntent = null;
 
     // Places API support structures
@@ -96,19 +97,25 @@ public class PlaceSearch extends AppCompatActivity {
     FetchPlaceRequest fetchPlaceRequest;
     Task<FetchPlaceResponse> responseTask;
 
+
+
     private ViewAnimator viewAnimator;
-    private ProgressBar progressBar;
+    private static ProgressBar progressBar;
+    static MenuItem SearchMenuItem;
+
 
     final String apiKey = BuildConfig.API_KEY;
+    static int count;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place_search);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) { actionBar.setDisplayHomeAsUpEnabled(true); }
+
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-
 
         // Setup Places Client
         if (!Places.isInitialized())
@@ -117,11 +124,21 @@ public class PlaceSearch extends AppCompatActivity {
         if(geofencingClient == null)
             geofencingClient = LocationServices.getGeofencingClient(this);
 
-        // Initialize members
         progressBar = findViewById(R.id.progress_bar);
         viewAnimator = findViewById(R.id.view_animator);
         placesClient = Places.createClient(this);
+        progressBar.setIndeterminate(true);
         initRecyclerView();
+    }
+
+    // Updates geofence count to limit it's increment and stops progressbar
+    public static class SetGeofenceCount implements Runnable {
+        public SetGeofenceCount(int geofenceCount) { count = geofenceCount; }
+        @Override
+        public void run() {
+            progressBar.setIndeterminate(false);
+            SearchMenuItem.setEnabled(true);
+        }
     }
 
 
@@ -135,7 +152,10 @@ public class PlaceSearch extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.place_search_menu, menu);
-        final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        SearchMenuItem = menu.findItem(R.id.search);
+        SearchMenuItem.setEnabled(false);
+        MainActivity.db.getGeofenceCount();
+        SearchView searchView = (SearchView) SearchMenuItem.getActionView();
         initSearchView(searchView);
         return super.onCreateOptionsMenu(menu);
     }
@@ -148,6 +168,14 @@ public class PlaceSearch extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
 
     private void initSearchView(SearchView searchView) {
         searchView.setQueryHint("Cerca un luogo");
@@ -196,19 +224,27 @@ public class PlaceSearch extends AppCompatActivity {
                     Utils.showToast(this,"Si è verificato un errore, riprova");
                     return;
                 }
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Vuoi aggiungerlo ai tuoi luoghi?");
-                builder.setMessage(place.getPrimaryText(null)+"\n("+place.getSecondaryText(null)+")");
-                builder.setPositiveButton("Aggiungi", (dialog, which) -> {
-                    MainActivity.db.insertGeofence(this,
-                            place.getPlaceId(),
-                            String.valueOf(place.getPrimaryText(null)),
-                            String.valueOf(place.getSecondaryText(null)),
-                            latLng.latitude, latLng.longitude);
-                    addGeofence(place.getPlaceId(), latLng);
-                    dialog.dismiss();
-                }).setNegativeButton("Annulla", (dialog, which) -> dialog.dismiss()).show();
+                if(count < Constants.Geofences.MAX_GEOFENCES) {
+                    builder.setTitle("Vuoi aggiungerlo ai tuoi luoghi?");
+                    builder.setMessage(place.getPrimaryText(null)+"\n("+place.getSecondaryText(null)+")");
+                    builder.setPositiveButton("Aggiungi", (dialog, which) -> {
+                        MainActivity.db.insertGeofence(
+                                place.getPlaceId(),
+                                String.valueOf(place.getPrimaryText(null)),
+                                String.valueOf(place.getSecondaryText(null)),
+                                latLng.latitude, latLng.longitude);
+                        addGeofence(place.getPlaceId(), latLng);
+                        count++;
+                        dialog.dismiss();
+                    }).setNegativeButton("Annulla", (dialog, which) -> dialog.dismiss());
+                } else {
+                    builder.setTitle("Limite raggiunto");
+                    builder.setMessage("Hai già 10 negozi registrati, elimina qualcuno per aggiungerne di nuovi");
+                    builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss() );
+                }
+
+                builder.show();
             }).addOnFailureListener(exception -> {
                 // TODO: just post a toast saying there was an error
                 Utils.showToast(this,"Si è verificato un errore, riprova");
@@ -288,7 +324,7 @@ public class PlaceSearch extends AppCompatActivity {
         return new Geofence.Builder()
                 .setRequestId(placeId)
                 .setCircularRegion(geofenceLatLng.latitude, geofenceLatLng.longitude, Constants.Geofences.RADIUS)
-                .setExpirationDuration(Constants.Geofences.EXPIRATION_DURATION)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)
                 .setLoiteringDelay(Constants.Geofences.LOITERING_DELAY)
                 .setNotificationResponsiveness(Constants.Geofences.NOTIFICATION_RESPONSIVENESS)
@@ -337,10 +373,6 @@ public class PlaceSearch extends AppCompatActivity {
         }
     }
 
-    private void showSnackbar(final int mainTextStringId, final int actionStringId,View.OnClickListener listener) {
-        Snackbar.make(findViewById(android.R.id.content),getString(mainTextStringId), Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(actionStringId), listener).show();
-    }
 
 
 }

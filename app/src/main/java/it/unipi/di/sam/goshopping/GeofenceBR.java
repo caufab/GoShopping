@@ -1,6 +1,7 @@
 package it.unipi.di.sam.goshopping;
 
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -45,7 +46,7 @@ public class GeofenceBR extends BroadcastReceiver {
         }
 
         db = new DbAccess(context);
-        cursor = db.getGeofences();
+        cursor = db.getGeofenceCursor();
 
 
         // Get the transition type
@@ -62,7 +63,7 @@ public class GeofenceBR extends BroadcastReceiver {
                         found = true;
                         if(gTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
 
-                            Cursor shoppingListCursor = db.query("");
+                            Cursor shoppingListCursor = db.getTopItems(Constants.NOTIFICATION_MAX_ITEMS);
                             if(shoppingListCursor.getCount() != 0) {
                                 Log.e("logging", "count: "+shoppingListCursor.getCount());
                                 String bigText = "";
@@ -73,13 +74,17 @@ public class GeofenceBR extends BroadcastReceiver {
                                 }
                                 bigText += "...";
                                 Log.e("logging", "bigText: "+bigText);
-                                // TODO: make pending intent to launch app
+                                Intent notifIntent = new Intent(context, MainActivity.class);
+                                TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+                                stackBuilder.addNextIntentWithParentStack(notifIntent);
+                                PendingIntent pendingIntent = stackBuilder.getPendingIntent(0,
+                                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                                 Utils.sendNotification(context,
                                         cursor.getInt(cursor.getColumnIndexOrThrow("_ID")),
                                         "Sei presso " + cursor.getString(cursor.getColumnIndexOrThrow("name")) + " ?",
                                         "Ecco i primi 5 elementi della tua lista della spesa:",
                                         bigText,
-                                        null);
+                                        pendingIntent);
                             }
                         }
                         else Utils.cancelNotification(context, cursor.getInt(cursor.getColumnIndexOrThrow("_ID")));

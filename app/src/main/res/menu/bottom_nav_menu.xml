@@ -3,18 +3,20 @@
 
     <item
         android:id="@+id/navigation_shoppinglist"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@drawable/ic_baseline_shopping_cart_24"
         android:title="@string/title_shoppinglist" />
 
     <item
         android:id="@+id/navigation_ficardlist"
-        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:icon="@drawable/ic_baseline_card_membership_24"
         android:title="@string/title_ficardlist" />
 
+  <!--
     <item
         android:id="@+id/navigation_stats"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/title_stats" />
+  -->
 
 
 </menu>

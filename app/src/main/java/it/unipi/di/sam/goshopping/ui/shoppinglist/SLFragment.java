@@ -45,60 +45,77 @@ public class SLFragment extends Fragment {
         super.onCreate(savedInstanceStace);
 
         slA = new ShoppingListAdapter();
-        try { cursor = MainActivity.db.query(DbAccess.shoppinglist_table_name); }
-        catch (Exception e) { Log.d("cursorException", "e.getMessage: "+e.getMessage() );
-            // exit app somehow
-        }
-        // Database initial insert
-        /*
-        MainActivity.db.delete("shopping_items","_ID>0", null);
 
-        for(int i=1;i<5;i++) {
-            newVal = new ContentValues();
-        //    newVal.put("_ID", i);
-            newVal.put("item", "food-n"+i);
-            newVal.put("info", "info-n"+i);
-            newVal.put("active_pos", i);
-            MainActivity.db.insert(DbAccess.shoppinglist_table_name, null, newVal);
+    }
+
+    public static class UpdateCursor implements Runnable {
+        private final String request;
+        private int pos;
+        public UpdateCursor(Cursor updatedCursor, String updateRequest) {
+            cursor = updatedCursor;
+            request = updateRequest;
         }
-*/
+        public UpdateCursor(Cursor updatedCursor, String updateRequest, int itemPosition) {
+            cursor = updatedCursor;
+            request = updateRequest;
+            pos = itemPosition;
+        }
+
+        @Override
+        public void run() {
+            switch(request) {
+                case "set_adapter":
+                    rv.setAdapter(slA);
+                    break;
+                case "insert":
+                    pos=cursor.getCount()-1;
+                    slA.notifyItemInserted(pos);
+                    rv.scrollToPosition(pos);
+                    break;
+                case "update":
+                    slA.notifyItemChanged(pos);
+                    rv.scrollToPosition(pos);
+                    break;
+                case "remove":
+                    slA.notifyItemRemoved(pos);
+                    break;
+                default:
+                    break;
+            }
+
+        }
     }
 
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-
         root = inflater.inflate(R.layout.fragment_shoppinglist, container, false);
-
         rv = (RecyclerView) root.findViewById(R.id.shoppinglist_rv);
-
         rv.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rv.setLayoutManager(llm);
-        rv.setAdapter(slA);
+
+
+        MainActivity.db.slQuery();
 
 
         EditText et = (EditText) root.findViewById(R.id.new_item_input);
         Button addItemBtn = (Button) root.findViewById(R.id.input_item_btn_add);
-        addItemBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Editable ed = et.getText();
-                if(ed != null) {
-                    String str = ed.toString().trim();
-                    if(ed.length() != 0) {
-                        int p = getItemPosition(str, -1);
-                        if(p == -1) {
-                            // TODO: also if item is not already in list (check with query or in cursor?)
-                            newVal.put("item", str);
-                            MainActivity.db.insertItem(DbAccess.shoppinglist_table_name, null, newVal);
-                        } else { // TODO: show something (effect of cardview or snackbar)
-                            rv.scrollToPosition(p);
-                        }
-                        et.getText().clear();
+        addItemBtn.setOnClickListener(view -> {
+            Editable ed = et.getText();
+            if(ed != null) {
+                String str = ed.toString().trim();
+                if(ed.length() != 0) {
+                    int p = getItemPosition(str, -1);
+                    if(p == -1) {
+                        // TODO: also if item is not already in list (check with query or in cursor?)
+                        newVal.put("item", str);
+                        MainActivity.db.insertItem(DbAccess.shoppinglist_table_name, null, newVal);
+                    } else { // TODO: show something (effect of cardview or snackbar)
+                        rv.scrollToPosition(p);
                     }
+                    et.getText().clear();
                 }
             }
         });
@@ -122,38 +139,32 @@ public class SLFragment extends Fragment {
         done.setVisibility(View.VISIBLE);
 
 
-        undo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                undo.setVisibility(View.GONE);
-                done.setVisibility(View.GONE);
-                et.getText().clear();
-                ol.setVisibility(View.GONE);
-                add.setVisibility(View.VISIBLE);
-            }
+        undo.setOnClickListener(view -> {
+            undo.setVisibility(View.GONE);
+            done.setVisibility(View.GONE);
+            et.getText().clear();
+            ol.setVisibility(View.GONE);
+            add.setVisibility(View.VISIBLE);
         });
 
-        done.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Editable ed = et.getText();
-                if(ed != null) {
-                    String str = ed.toString().trim();
-                    // update only if new item is not empty string or equal to old item
-                    if (ed.length() != 0 && str.compareTo(holder.item) != 0) {
-                        int p = getItemPosition(str, holder.getAdapterPosition());
-                        if (p != -1) // item is not in list
-                            rv.scrollToPosition(p);
-                        else // if(element is in database) equals to inserting element that already exists in db
-                            MainActivity.db.updateItem(holder.id, holder.getAdapterPosition(), str);
-                    }
+        done.setOnClickListener(view -> {
+            Editable ed = et.getText();
+            if(ed != null) {
+                String str = ed.toString().trim();
+                // update only if new item is not empty string or equal to old item
+                if (ed.length() != 0 && str.compareTo(holder.item) != 0) {
+                    int p = getItemPosition(str, holder.getAdapterPosition());
+                    if (p != -1) // item is not in list
+                        rv.scrollToPosition(p);
+                    else // if(element is in database) equals to inserting element that already exists in db
+                        MainActivity.db.updateItem(holder.id, holder.getAdapterPosition(), str);
                 }
-                undo.setVisibility(View.GONE);
-                done.setVisibility(View.GONE);
-                et.getText().clear();
-                ol.setVisibility(View.GONE);
-                add.setVisibility(View.VISIBLE);
             }
+            undo.setVisibility(View.GONE);
+            done.setVisibility(View.GONE);
+            et.getText().clear();
+            ol.setVisibility(View.GONE);
+            add.setVisibility(View.VISIBLE);
         });
 
 
@@ -171,38 +182,8 @@ public class SLFragment extends Fragment {
         return -1;
     }
 
-    public static class RefreshRVOnInsert implements Runnable {
-        @Override
-        public void run() {
-            cursor = MainActivity.db.query(DbAccess.shoppinglist_table_name);
-            int p=cursor.getCount()-1;
-            slA.notifyItemInserted(p);
-            rv.scrollToPosition(p);
-        }
-    }
 
-    public static class RefreshRVOnUpdate implements Runnable {
-        private int p;
-        public RefreshRVOnUpdate(int position) { p = position; }
 
-        @Override
-        public void run() {
-            cursor = MainActivity.db.query(DbAccess.shoppinglist_table_name);
-            slA.notifyItemChanged(p);
-            rv.scrollToPosition(p);
-        }
-    }
-
-    public static class RefreshRVOnRemoved implements Runnable {
-        private int p;
-        public RefreshRVOnRemoved(int position) { p = position; }
-
-        @Override
-        public void run() {
-            cursor = MainActivity.db.query(DbAccess.shoppinglist_table_name);
-            slA.notifyItemRemoved(p);
-        }
-    }
 
     @Override
     public void onResume() {

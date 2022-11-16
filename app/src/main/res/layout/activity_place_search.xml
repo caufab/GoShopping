@@ -25,13 +25,13 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
+<!--
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary" />
-
+-->
         <ProgressBar
             android:id="@+id/progress_bar"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
@@ -42,12 +42,15 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
+
     <ViewAnimator
         android:id="@+id/view_animator"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TextView
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="16dp"

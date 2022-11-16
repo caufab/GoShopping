@@ -66,14 +66,12 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
 
     String tmp;
-    ContentValues newVal = new ContentValues();
 
     @Override
     public void onBindViewHolder(@NonNull ShoppingListViewHolder holder, int position) {
 
         if(SLFragment.cursor.moveToPosition(position)) {
             holder.id = SLFragment.cursor.getInt(SLFragment.cursor.getColumnIndexOrThrow("_ID"));
-        //    holder.active_pos = SLFragment.cursor.getInt(SLFragment.cursor.getColumnIndexOrThrow("active_pos"));
             holder.item = SLFragment.cursor.getString(SLFragment.cursor.getColumnIndexOrThrow("item"));
         }
 
@@ -84,22 +82,13 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         tmp = holder.item;
         holder.tv.setText(tmp);
 
-        holder.cv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MainActivity.db.removeItem(holder.id, holder.getAdapterPosition());
-            }
-        });
+        holder.cv.setOnClickListener(view ->
+                MainActivity.db.removeItem(holder.id, holder.getAdapterPosition()));
 
 
-        holder.cv.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                // make me edit it
-                SLFragment.editItem(holder);
-
-                return true;
-            }
+        holder.cv.setOnLongClickListener(view -> {
+            SLFragment.editItem(holder);
+            return true;
         });
 
 
