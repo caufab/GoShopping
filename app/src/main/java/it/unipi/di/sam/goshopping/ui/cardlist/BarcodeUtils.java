@@ -34,28 +34,20 @@ public class BarcodeUtils extends Activity {
         }
     }
 
-    private int h,w;
-
     public void generateBarcodeImage(ImageView imageView, String barcodeFormat, String code) {
 
-        Thread T = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-
-                Log.e("logging", "w: " + w + " | h: " + h);
-                try {
-                    if (imageView.getMeasuredHeight() == 0 || imageView.getMeasuredWidth() == 0)
-                        throw new Exception("Barcode imageView is not yet laid out");
-                    BitMatrix bitMatrix = multiFormatWriter.encode(code, BarcodeFormat.valueOf(barcodeFormat), imageView.getMeasuredWidth(), imageView.getMeasuredHeight());
-                    BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                    Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-
-                    runOnUiThread(new postImage(imageView, bitmap));
-                } catch (Exception e) {
-                    Log.e("errorcode", "Error: " + e.getMessage());
-                    runOnUiThread(new postImage(imageView, null));
-                }
+        Thread T = new Thread(() -> {
+            MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+            try {
+                if (imageView.getMeasuredHeight() == 0 || imageView.getMeasuredWidth() == 0)
+                    throw new Exception("Barcode imageView is not yet laid out");
+                BitMatrix bitMatrix = multiFormatWriter.encode(code, BarcodeFormat.valueOf(barcodeFormat), imageView.getMeasuredWidth(), imageView.getMeasuredHeight());
+                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+                runOnUiThread(new postImage(imageView, bitmap));
+            } catch (Exception e) {
+                Log.e("error code", "Error: " + e.getMessage());
+                runOnUiThread(new postImage(imageView, null));
             }
         });
         T.start();

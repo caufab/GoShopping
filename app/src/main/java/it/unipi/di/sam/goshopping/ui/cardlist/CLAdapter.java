@@ -2,6 +2,8 @@ package it.unipi.di.sam.goshopping.ui.cardlist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -18,6 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.ColorUtils;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -26,6 +30,7 @@ import org.w3c.dom.Text;
 
 import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
+import kotlin.jvm.internal.PackageReference;
 
 public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
 
@@ -38,8 +43,6 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
         String barcodeFormat;
         int id, usedTimes;
         int bgColor;
-
-        //ColorUtils.calculateLuminance(Color.green(1));
 
 
         public CLViewHolder(@NonNull View itemView) {
@@ -75,18 +78,25 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
         }
 
         holder.tv.setText(holder.name);
+        holder.tv.setTextColor(getTextColorByBackground(holder.bgColor));
         holder.cv.setCardBackgroundColor(holder.bgColor);
         holder.cv.setOnClickListener(view -> {
             showCard(holder);
-            MainActivity.db.incrementCardUsedTimes(holder.id, holder.usedTimes+1);
         });
 
     }
 
+    // help choose text color base on how dark is it's background
+    private static int getTextColorByBackground(int backgroundColor) {
+        if(Color.valueOf(backgroundColor).luminance() <= 0.5)
+            return Color.parseColor("#FFFFFF");
+        else
+            return Color.parseColor("#121212");
+    }
 
     public static void showCard(CLAdapter.CLViewHolder holder) {
         View overlay = CLFragment.root.findViewById(R.id.show_card_overlay);
-        ConstraintLayout popupCL = CLFragment.root.findViewById(R.id.show_card_cl);
+        CardView popupCL = CLFragment.root.findViewById(R.id.show_card_cl);
         TextView cardName = CLFragment.root.findViewById(R.id.show_card_name);
         ImageView barcodeImageView = CLFragment.root.findViewById(R.id.barcode_image);
         TextView code = CLFragment.root.findViewById(R.id.barcode_text);
@@ -94,9 +104,12 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
 
         cardName.setText(holder.name);
         code.setText(holder.code);
+        popupCL.setCardBackgroundColor(holder.bgColor);
+        cardName.setTextColor(getTextColorByBackground(holder.bgColor));
 
         overlay.setVisibility(View.VISIBLE);
         popupCL.setVisibility(View.VISIBLE);
+
 
         // If barcode ImageView has been created generate immediately the barcode, otherwise wait until it is created
         if(barcodeImageView.isLaidOut())
@@ -122,16 +135,20 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
             b.putString("name", holder.name);
             b.putString("code", holder.code);
             b.putString("format", holder.barcodeFormat);
+            b.putInt("color", holder.bgColor);
             intent.putExtras(b);
             view.getContext().startActivity(intent);
             backToFragment(overlay,popupCL,barcodeImageView,fabEdit);
         });
 
-        overlay.setOnClickListener(view -> backToFragment(overlay,popupCL, barcodeImageView,fabEdit));
+        overlay.setOnClickListener(view -> {
+            backToFragment(overlay,popupCL, barcodeImageView,fabEdit);
+            MainActivity.db.incrementCardUsedTimes(holder.id, holder.usedTimes+1);
+        });
     }
 
 
-    public static void backToFragment(View overlay, ConstraintLayout popupCL, ImageView barcodeImageView, FloatingActionButton fabEdit) {
+    public static void backToFragment(View overlay, CardView popupCL, ImageView barcodeImageView, FloatingActionButton fabEdit) {
         overlay.setVisibility(View.GONE);
         popupCL.setVisibility(View.GONE);
         fabEdit.setVisibility(View.GONE);

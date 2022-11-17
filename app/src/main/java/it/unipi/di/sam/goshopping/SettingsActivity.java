@@ -42,6 +42,7 @@ import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -120,7 +121,6 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
             ListPreference themePref = findPreference("theme_preference");
             themePref.setOnPreferenceChangeListener((preference, newValue) -> {
                 Log.e("logging", "new value: "+newValue.toString());
-
                 switch (newValue.toString()) {
                     case "light":
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -132,8 +132,17 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
                         break;
                 }
-
                 return true;
+            });
+
+            Preference infoPreference = findPreference("info_preference");
+            infoPreference.setOnPreferenceClickListener(preference -> {
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+                builder.setTitle("GoShopping");
+                builder.setMessage("App made by Fabrizio Cau. Have fun");
+                builder.setPositiveButton("Chiudi", (dialog, which) -> dialog.dismiss());
+                builder.show();
+                return false;
             });
 
         }

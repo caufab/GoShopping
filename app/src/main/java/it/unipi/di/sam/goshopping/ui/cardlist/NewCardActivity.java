@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.ScanContract;
@@ -67,6 +69,13 @@ public class NewCardActivity extends AppCompatActivity {
             cardName.setText(b.getString("name"));
             barcodeTV.setText(b.getString("code"));
             barcodeFormat = b.getString("format");
+            color = b.getInt("color");
+
+            String hexColor = String.format("#%06X",(0xFFFFFF & color));
+            radioButton = (RadioButton) radioGroup.findViewWithTag(hexColor);
+            if(radioButton != null) radioButton.setChecked(true);
+            else Toast.makeText(this, "Impossibile caricare il colore. Riseleziona il colore della carta", Toast.LENGTH_LONG).show();
+
 
             addCardBtn.setText("Aggiorna");
             remCardBtn.setVisibility(View.VISIBLE);
@@ -75,19 +84,11 @@ public class NewCardActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 builder.setTitle("Elimina carta");
                 builder.setMessage("Sei sicuro di voler eliminare la carta "+b.getString("name"));
-                builder.setPositiveButton("Conferma", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        MainActivity.db.removeCard(b.getInt("id"), b.getInt("rv_pos"));
-                        dialogInterface.dismiss();
-                        finish();
-                    }
-                }).setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                }).show();
+                builder.setPositiveButton("Conferma", (dialogInterface, i) -> {
+                    MainActivity.db.removeCard(b.getInt("id"), b.getInt("rv_pos"));
+                    dialogInterface.dismiss();
+                    finish();
+                }).setNegativeButton("Annulla", (dialogInterface, i) -> dialogInterface.dismiss()).show();
 
             });
 
@@ -102,7 +103,8 @@ public class NewCardActivity extends AppCompatActivity {
                         CLFragment.bcUtils.generateBarcodeImage(imageView, barcodeFormat, barcodeET.getText().toString());
                     }
                 });
-        } else { // new card use case
+        }
+        else { // new card use case
             addCardBtn.setText("Aggiungi");
             remCardBtn.setVisibility(View.GONE);
         }
@@ -118,6 +120,10 @@ public class NewCardActivity extends AppCompatActivity {
 
         });
 
+        // unlocks update button
+        radioGroup.setOnCheckedChangeListener((group, checkedId) ->
+                addCardBtn.setEnabled(cardName.getText().toString().trim().length() > 0
+                && barcodeET.getText().toString().trim().length() > 0));
 
 
         // go back
@@ -125,9 +131,7 @@ public class NewCardActivity extends AppCompatActivity {
         // add new card to database
         addCardBtn.setOnClickListener(view -> {
             radioButton = (RadioButton) findViewById(radioGroup.getCheckedRadioButtonId());
-            color = radioButton.getButtonTintList().getDefaultColor();
-            Log.e("logging", ""+color);
-
+            color = radioButton.getButtonTintList().getDefaultColor(); // update color only if color radio button was found
 
             if (b == null) // add mode
                 MainActivity.db.addCard(cardName.getText().toString(), barcodeET.getText().toString(), barcodeFormat, color);

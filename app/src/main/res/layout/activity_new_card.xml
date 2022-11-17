@@ -18,6 +18,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/barcode_ll"
+        android:elevation="10dp"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:padding="10dp"
@@ -109,7 +110,7 @@
             android:background="@drawable/ic_baseline_photo_camera_24"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
             android:clickable="true"
-            android:contentDescription="TODO" />
+            android:contentDescription="Camera scan button" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -125,9 +126,10 @@
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/card_name"
-        android:inputType="text"
+        android:inputType="textCapSentences"
         android:maxLength="20"
         android:maxLines="1"
+
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:paddingHorizontal="10dp"
@@ -148,7 +150,6 @@
 
         <RadioGroup
             android:id="@+id/color_radio_group"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
@@ -157,56 +158,35 @@
 
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/color_white"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:scaleY="1.5"
-                android:scaleX="1.5"
-                android:transformPivotX="-20dp"
-                android:transformPivotY="15dp"
-                android:layout_weight="1"
-
+                style="@style/CardColorRadioButton"
                 android:checked="true"
+                android:tag="#FFFFFF"
                 android:buttonTint="#FFFFFF"/>
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/color_red"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:scaleY="1.5"
-                android:scaleX="1.5"
-                android:transformPivotX="-20dp"
-                android:transformPivotY="15dp"
-                android:layout_weight="1"
-                android:buttonTint="#9D181D"/>
+                style="@style/CardColorRadioButton"
+                android:tag="#E30713"
+                android:buttonTint="#E30713"/>
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/color_orange"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:scaleY="1.5"
-                android:scaleX="1.5"
-                android:transformPivotX="-20dp"
-                android:transformPivotY="15dp"
-                android:layout_weight="1"
-                android:buttonTint="#E64A19"/>
+                style="@style/CardColorRadioButton"
+                android:tag="#F4511E"
+                android:buttonTint="#F4511E"/>
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/color_green"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:scaleY="1.5"
-                android:scaleX="1.5"
-                android:transformPivotX="-20dp"
-                android:transformPivotY="15dp"
-                android:layout_weight="1"
+                style="@style/CardColorRadioButton"
+                android:tag="#388E3C"
                 android:buttonTint="#388E3C"/>
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/color_blue"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:scaleY="1.5"
-                android:scaleX="1.5"
-                android:transformPivotX="-20dp"
-                android:transformPivotY="15dp"
-                android:layout_weight="1"
-                android:buttonTint="#1976D2"/>
+                style="@style/CardColorRadioButton"
+                android:tag="#4A899D"
+                android:buttonTint="#4A899D"/>
+            <androidx.appcompat.widget.AppCompatRadioButton
+                android:id="@+id/color_black"
+                style="@style/CardColorRadioButton"
+                android:tag="#000000"
+                android:buttonTint="#000000"/>
 
         </RadioGroup>
 

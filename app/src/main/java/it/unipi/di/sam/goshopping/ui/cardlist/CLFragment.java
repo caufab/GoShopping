@@ -1,6 +1,7 @@
 package it.unipi.di.sam.goshopping.ui.cardlist;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,19 +9,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
-import it.unipi.di.sam.goshopping.databinding.FragmentFicardlistBinding;
+//import it.unipi.di.sam.goshopping.databinding.FragmentCardlistBinding;
 
 public class CLFragment extends Fragment {
 
-    private FragmentFicardlistBinding binding;
+    public CLFragment() {}
+
+    //private FragmentCardlistBinding binding;
     public static View root;
     public static RecyclerView rvc;
     public static CLAdapter CLA;
@@ -69,6 +75,9 @@ public class CLFragment extends Fragment {
                 case "remove":
                     CLA.notifyItemRemoved(pos);
                     break;
+                case "increment":
+                    CLA.notifyDataSetChanged();
+                    break;
                 default:
                     break;
             }
@@ -79,12 +88,19 @@ public class CLFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        binding = FragmentFicardlistBinding.inflate(inflater, container, false);
-        root = binding.getRoot();
+        //binding = FragmentCardlistBinding.inflate(inflater, container, false);
+        //root = binding.getRoot();
+
+    //  root = inflater.inflate(R.layout.fragment_ficardlist, null);
+        root = inflater.inflate(R.layout.fragment_ficardlist, container, false);
 
         rvc = (RecyclerView) root.findViewById(R.id.cardlist_rv);
         rvc.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        int spanCount = Integer.parseInt(sharedPreferences.getString("card_list_span_count", "1"));
+        GridLayoutManager llm = new GridLayoutManager(getContext(), spanCount);
+
+    //    LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rvc.setLayoutManager(llm);
 
         MainActivity.db.clQuery();

@@ -18,4 +18,6 @@
 
     <color name="iconOnBackground">#FFFFFFFF</color>
 
+    <color name="overlayColor">#B52E2E2E</color>
+
 </resources>

@@ -17,6 +17,8 @@
 
     <color name="iconOnBackground">#FF000000</color>
 
+    <color name="overlayColor">#B5000000</color>
+
     <!--   <color name="buttons">#303030</color>-->
 
 

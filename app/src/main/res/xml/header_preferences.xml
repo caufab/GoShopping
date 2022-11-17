@@ -18,19 +18,45 @@
         app:icon="@drawable/ic_baseline_place_24"
         app:iconSpaceReserved="false"
         app:key="sync_header"
-
         app:title="@string/geofencing_settings_header" />
+
+    <SwitchPreference
+        app:key="order_by_used_times"
+        app:persistent="true"
+        app:title="Ordina carte per utilizzo"
+        app:summaryOn="Le carte vengono ordinate per utilizzo"
+        app:summaryOff="Le carte vengono ordinate in base all'inserimento"
+        app:icon="@drawable/ic_baseline_format_list_numbered_24"/>
+
+    <ListPreference
+        app:key="card_list_span_count"
+        app:title="Numero di carte per riga"
+        app:icon="@drawable/ic_baseline_view_list_24"
+        app:useSimpleSummaryProvider="true"
+        app:entries="@array/grid_entries"
+        app:entryValues="@array/grid_values"
+        app:defaultValue="1"/>
+
+    <ListPreference
+        app:key="shopping_list_span_count"
+        app:title="Numero di articoli della spesa per riga"
+        app:icon="@drawable/ic_baseline_view_list_24"
+        app:useSimpleSummaryProvider="true"
+        app:entries="@array/grid_entries"
+        app:entryValues="@array/grid_values"
+        app:defaultValue="1"/>
 
     <ListPreference
         app:key="theme_preference"
         app:title="Aspetto"
-        android:persistent="true"
-        android:icon="@drawable/ic_baseline_palette_24"
+        app:persistent="true"
+        app:icon="@drawable/ic_baseline_palette_24"
         app:defaultValue="systems"
         app:entries="@array/theme_entries"
         app:entryValues="@array/theme_values"
-        android:dialogIcon="@drawable/ic_baseline_palette_24"
         app:useSimpleSummaryProvider="true"/>
+
+
 
     <Preference
         app:key="backup_preference"
