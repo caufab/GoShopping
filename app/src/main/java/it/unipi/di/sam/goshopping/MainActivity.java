@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.navigation.NavController;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SetTheme(sharedPreferences.getString("theme_preference", "systems"));
+
 
 
         // TODO: move this to a public static method get returns a DbAccess object after checking if DbAccess is not null

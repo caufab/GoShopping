@@ -41,8 +41,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             cv = (CardView) itemView.findViewById(R.id.card_view);
             tv = (TextView) itemView.findViewById(R.id.shoppingitem_text);
             cl = (ConstraintLayout) itemView.findViewById(R.id.input_item_cl);
-            // debug purpose only
-            dbg = (TextView) itemView.findViewById(R.id.shoppingitem_debugtext);
+
         }
     }
 
@@ -75,9 +74,6 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             holder.item = SLFragment.cursor.getString(SLFragment.cursor.getColumnIndexOrThrow("item"));
         }
 
-        // Debug purpose only
-        tmp = "[ID: "+holder.id+"] "+holder.item+" [rv: "+position+"]";
-        holder.dbg.setText(tmp);
 
         tmp = holder.item;
         holder.tv.setText(tmp);

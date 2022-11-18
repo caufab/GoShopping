@@ -1,5 +1,6 @@
 package it.unipi.di.sam.goshopping.ui.shoppinglist;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -19,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -46,7 +49,6 @@ public class SLFragment extends Fragment {
 
     public void onCreate(Bundle savedInstanceStace) {
         super.onCreate(savedInstanceStace);
-
         slA = new ShoppingListAdapter();
 
     }
