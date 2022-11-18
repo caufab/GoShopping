@@ -12,14 +12,10 @@
         tools:layout="@layout/fragment_shoppinglist" />
 
     <fragment
-        android:id="@+id/navigation_ficardlist"
+        android:id="@+id/navigation_cardlist"
         android:name="it.unipi.di.sam.goshopping.ui.cardlist.CLFragment"
         android:label="@string/title_ficardlist"
-        tools:layout="@layout/fragment_ficardlist" />
+        tools:layout="@layout/fragment_cardlist" />
 
-    <fragment
-        android:id="@+id/navigation_stats"
-        android:name="it.unipi.di.sam.goshopping.ui.stats.StatsFragment"
-        android:label="@string/title_stats"
-        tools:layout="@layout/fragment_stats" />
+
 </navigation>

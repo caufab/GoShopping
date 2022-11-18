@@ -3,9 +3,13 @@ package it.unipi.di.sam.goshopping;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -25,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     public static DbAccess db;
 
     private ActivityMainBinding binding;
-
 
     public static void SetTheme(String themeValue) {
 
@@ -51,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         SetTheme(sharedPreferences.getString("theme_preference", "systems"));
 
 
-
         // TODO: move this to a public static method get returns a DbAccess object after checking if DbAccess is not null
         db = new DbAccess(this);
 
@@ -68,24 +70,13 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_shoppinglist, R.id.navigation_ficardlist, R.id.navigation_stats)
-                .build();
+                R.id.navigation_shoppinglist, R.id.navigation_cardlist).build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
 
     }
-
-    /*
-    private boolean checkPermissions() {
-        boolean b = true;
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q)
-            b = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
-        return b && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
-*/
-
 
 
     @Override
@@ -99,8 +90,34 @@ public class MainActivity extends AppCompatActivity {
         if(item.getItemId() == R.id.settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
+        } else if(item.getItemId() == R.id.share_list) {
+            db.getShareableList(this);
+            return true;
         } else
             return super.onOptionsItemSelected(item);
+    }
+
+
+    public static class ShareList implements Runnable {
+        String str;
+        Context mContext;
+        public ShareList(Context context, String stringList) { mContext = context; str = stringList; }
+
+        @Override
+        public void run() {
+            if(mContext != null) {
+                if(str == null)
+                    Toast.makeText(mContext, "Non ci sono elementi da condividere", Toast.LENGTH_LONG).show();
+                else {
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, str);
+                    sendIntent.setType("text/plain");
+                    Intent shareIntent = Intent.createChooser(sendIntent, null);
+                    mContext.startActivity(shareIntent);
+                }
+            }
+        }
     }
 
 

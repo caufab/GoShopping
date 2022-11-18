@@ -59,10 +59,9 @@
 
 
     <Preference
-        app:key="backup_preference"
-        app:title="Backup"
-        app:icon="@drawable/ic_baseline_backup_24"
-        app:summary="Effettua il backup su Google Drive"/>
+        app:key="share_list_preference"
+        app:title="Opzioni condivisione?"
+        app:icon="@drawable/ic_baseline_backup_24"/>
 
     <Preference
         app:key="info_preference"

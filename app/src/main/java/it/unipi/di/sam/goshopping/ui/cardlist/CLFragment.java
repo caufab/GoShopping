@@ -4,17 +4,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -92,7 +89,7 @@ public class CLFragment extends Fragment {
         //root = binding.getRoot();
 
     //  root = inflater.inflate(R.layout.fragment_ficardlist, null);
-        root = inflater.inflate(R.layout.fragment_ficardlist, container, false);
+        root = inflater.inflate(R.layout.fragment_cardlist, container, false);
 
         rvc = (RecyclerView) root.findViewById(R.id.cardlist_rv);
         rvc.setHasFixedSize(true);

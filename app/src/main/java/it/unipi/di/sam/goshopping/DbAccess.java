@@ -3,6 +3,7 @@ package it.unipi.di.sam.goshopping;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -175,6 +176,24 @@ public class DbAccess extends Activity {
             db.insert(table, nullColumnHack, val);
             Cursor cursor = db.query(shoppinglist_table_name, null, null, null, null, null, "_ID");
             runOnUiThread(new SLFragment.UpdateCursor(cursor,"insert"));
+        });
+        T.start();
+    }
+
+    public void getShareableList(Context context) {
+        Thread T = new Thread(() -> {
+            SQLiteDatabase db = mOH.getReadableDatabase();
+            Cursor cursor = db.query(shoppinglist_table_name, null, null, null, null, null, "_ID");
+            StringBuilder strList = new StringBuilder();
+            if(cursor.getCount() == 0)
+                runOnUiThread(new MainActivity.ShareList(context, null));
+            else {
+                strList.append("Ecco la mia lista della spesa:\n");
+                while (cursor.moveToNext())
+                    strList.append(cursor.getString(cursor.getColumnIndexOrThrow("item"))).append("\n");
+                runOnUiThread(new MainActivity.ShareList(context, strList.toString()));
+            }
+            cursor.close();
         });
         T.start();
     }

@@ -104,7 +104,6 @@ public class SLFragment extends Fragment {
         int spanCount = Integer.parseInt(sharedPreferences.getString("shopping_list_span_count", "1"));
         GridLayoutManager llm = new GridLayoutManager(getContext(), spanCount);
 
-        //LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rv.setLayoutManager(llm);
 
 
