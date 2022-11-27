@@ -4,31 +4,19 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import it.unipi.di.sam.goshopping.DbAccess;
 import it.unipi.di.sam.goshopping.MainActivity;
@@ -122,7 +110,7 @@ public class SLFragment extends Fragment {
                         // TODO: also if item is not already in list (check with query or in cursor?)
                         newVal.put("item", str);
                         MainActivity.db.insertItem(DbAccess.shoppinglist_table_name, null, newVal);
-                    } else { // TODO: show something (effect of cardview or snackbar)
+                    } else {
                         rv.scrollToPosition(p);
                     }
                     et.getText().clear();
@@ -209,6 +197,5 @@ public class SLFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-    //    binding = null;
     }
 }

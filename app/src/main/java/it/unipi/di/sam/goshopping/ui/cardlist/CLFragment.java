@@ -17,13 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
-//import it.unipi.di.sam.goshopping.databinding.FragmentCardlistBinding;
 
 public class CLFragment extends Fragment {
 
     public CLFragment() {}
 
-    //private FragmentCardlistBinding binding;
     public static View root;
     public static RecyclerView rvc;
     public static CLAdapter CLA;
@@ -85,10 +83,6 @@ public class CLFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        //binding = FragmentCardlistBinding.inflate(inflater, container, false);
-        //root = binding.getRoot();
-
-    //  root = inflater.inflate(R.layout.fragment_ficardlist, null);
         root = inflater.inflate(R.layout.fragment_cardlist, container, false);
 
         rvc = (RecyclerView) root.findViewById(R.id.cardlist_rv);
@@ -97,7 +91,6 @@ public class CLFragment extends Fragment {
         int spanCount = Integer.parseInt(sharedPreferences.getString("card_list_span_count", "1"));
         GridLayoutManager llm = new GridLayoutManager(getContext(), spanCount);
 
-    //    LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rvc.setLayoutManager(llm);
 
         MainActivity.db.clQuery();

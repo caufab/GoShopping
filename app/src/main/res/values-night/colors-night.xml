@@ -6,7 +6,7 @@
 
     <!-- for debug purpose only -->
 
-    <color name="red_primary">#ee0202</color>
+    <color name="red_primary">#DA2727</color>
     <color name="red_primaryLight">#ff5735</color>
     <color name="red_primaryDark">#b20000</color>
 
@@ -19,8 +19,6 @@
     <color name="iconOnBackground">#FFFFFFFF</color>
 
     <color name="overlayColor">#B52E2E2E</color>
-
-    <color name="cardViewShadow">#88EDEDED</color>
 
     <color name="cardViewStroke">#EDEDED</color>
 

@@ -70,15 +70,8 @@ public class DbAccess extends Activity {
         }
 
         @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { }
 
-            Log.w("DB", "Upgrading database from version " + oldVersion + " to "
-                    + newVersion + ", which will destroy all old data");
-            // TODO: start thread
-            // TODO: how to hupdate all tables?
-            db.execSQL("DROP TABLE IF EXISTS "+shoppinglist_table_name);
-            onCreate(db);
-        }
     }
 
 
@@ -88,7 +81,7 @@ public class DbAccess extends Activity {
     public DbAccess(Context context) {
         mOH = new mSQLiteOH(context);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        // making sure tables still exists
+        // making sure all tables still exists
         SQLiteDatabase db = mOH.getWritableDatabase();
         mOH.createTableINE(db, shoppinglist_table_name);
         mOH.createTableINE(db, cardlist_table_name);

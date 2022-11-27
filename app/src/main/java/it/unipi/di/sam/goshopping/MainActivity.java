@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     public static void SetTheme(String themeValue) {
-
         switch (themeValue) {
             case "light":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -61,10 +60,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         Utils.createNotificationChannel(this);
-
-
-
-//      FIXME: remove form comments: core element for fragment navigation
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each

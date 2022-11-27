@@ -21,20 +21,8 @@
 
         <item name="android:navigationBarColor">@color/red_primaryDark</item>
 
-   <!--     <item name="android:actionBarStyle">@style/ActionBar</item> -->
-
 
     </style>
 
 
-
-
- <!--
-   -->
-
-    <!-- Actionbar Theme
-    <style name="ActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@drawable/rounded_textinput_bg</item>
-    </style>
-    -->
 </resources>

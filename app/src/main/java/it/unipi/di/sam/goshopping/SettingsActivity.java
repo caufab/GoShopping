@@ -1,11 +1,6 @@
 package it.unipi.di.sam.goshopping;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.PendingIntent;
-import android.app.UiModeManager;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -13,11 +8,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -26,33 +18,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.preference.DialogPreference;
 import androidx.preference.ListPreference;
-import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-import androidx.preference.PreferenceScreen;
-import androidx.preference.SwitchPreference;
 
-import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
-import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
-import it.unipi.di.sam.goshopping.R;
 
 public class SettingsActivity extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
@@ -148,25 +126,8 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
         }
     }
 
-    /*
-    public static class MessagesFragment extends PreferenceFragmentCompat {
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.messages_preferences, rootKey);
-        }
-    }
 
-    public static class SyncFragment extends PreferenceFragmentCompat {
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.sync_preferences, rootKey);
-        }
-    }
-    */
-
-    // FIXME: try to extract this class into a separate file
     public static class GeofencingFragment extends PreferenceFragmentCompat {
-
 
         private static GeofencingClient mGeofencingClient;
         private Preference geofencingSwitch;
@@ -198,7 +159,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
             permissionNA.setOnPreferenceClickListener(preference -> {
                 if(!checkFinePosPermission() || !checkBgPosPermission()) {
                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
-                } else if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.TIRAMISU && !checkNotifPermission())
+                } else if(!checkNotifPermission())
                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_PERMISSIONS_REQUEST_CODE);
                 return false;
             });
@@ -208,16 +169,17 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
         }
 
         private boolean checkBgPosPermission() {
-            boolean b = true;
             if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q)
-                b = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
-            return b;
+                return ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
+            else return true;
         }
         private boolean checkFinePosPermission() {
             return ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
         }
         private boolean checkNotifPermission() {
-            return ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.TIRAMISU)
+                return ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+            else return true;
         }
 
 
@@ -306,6 +268,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                         message = "Vai su impostazioni e abilita la ricezione delle notifiche";
                     else if(permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION))
                         message = "Vai su impostazioni, clicca su Autorizzazioni -> Posizione e scegli l'opzione 'Consenti sempre'";
+                    else message = "E' necessario concedere le autorizzazioni richieste per utilizzare il servizio di geofencing";
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("Autorizzazione richiesta");
                     builder.setMessage(message);

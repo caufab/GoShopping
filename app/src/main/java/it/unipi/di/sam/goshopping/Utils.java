@@ -1,20 +1,14 @@
 package it.unipi.di.sam.goshopping;
 
 
-import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.widget.Toast;
 
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.PermissionChecker;
 
 public class Utils {
 
@@ -42,7 +36,7 @@ public class Utils {
     @SuppressWarnings("MissingPermission")
     public static void sendNotification(Context context, int notificationId, String title, String smallText, String bigText, PendingIntent pendingIntent) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_dashboard_black_24dp)
+                .setSmallIcon(R.mipmap.app_icon_v1)
                 .setContentTitle(title)
                 .setContentText(smallText)
                 .setContentIntent(pendingIntent)

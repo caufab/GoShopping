@@ -1,18 +1,5 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--
-        <Preference
-            app:fragment="it.unipi.di.sam.goshopping.SettingsActivity$MessagesFragment"
-            app:icon="@drawable/messages"
-            app:key="messages_header"
-            app:title="@string/ages_header" />
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-        <Preference
-            app:fragment="it.unipi.di.sam.goshopping.SettingsActivity$SyncFragment"
-            app:icon="@drawable/sync"
-            app:key="sync_header"
-            app:title="@string/sync_header" />
-    -->
     <Preference
         app:fragment="it.unipi.di.sam.goshopping.SettingsActivity$GeofencingFragment"
         app:icon="@drawable/ic_baseline_place_24"
@@ -56,12 +43,6 @@
         app:entryValues="@array/theme_values"
         app:useSimpleSummaryProvider="true"/>
 
-
-
-    <Preference
-        app:key="share_list_preference"
-        app:title="Opzioni condivisione?"
-        app:icon="@drawable/ic_baseline_backup_24"/>
 
     <Preference
         app:key="info_preference"

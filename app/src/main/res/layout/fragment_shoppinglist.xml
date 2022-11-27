@@ -49,7 +49,7 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_marginEnd="10dp"
-
+            android:inputType="textCapSentences"
             android:background="@drawable/rounded_textinput_bg"
             android:backgroundTint="@color/new_item_et_bg"
             android:textColor="@color/iconOnBackground"
@@ -95,7 +95,6 @@
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_baseline_done_24"
-
                 android:clickable="true"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:visibility="gone"
@@ -118,11 +117,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

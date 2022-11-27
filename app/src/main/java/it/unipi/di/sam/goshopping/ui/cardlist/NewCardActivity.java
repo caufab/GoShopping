@@ -4,13 +4,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
@@ -31,7 +27,6 @@ import it.unipi.di.sam.goshopping.R;
 
 public class NewCardActivity extends AppCompatActivity {
 
-
     private EditText barcodeET;
     private ImageView imageView;
     private String barcodeFormat;
@@ -44,7 +39,6 @@ public class NewCardActivity extends AppCompatActivity {
     private RadioGroup radioGroup;
     private RadioButton radioButton;
     private int color;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -4,10 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.DialogCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,67 +12,39 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
-import android.widget.Toast;
 import android.widget.ViewAnimator;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
-import com.google.android.libraries.places.api.model.LocationBias;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.RectangularBounds;
-import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.FetchPhotoResponse;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import org.intellij.lang.annotations.Language;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class PlaceSearch extends AppCompatActivity {
 
@@ -340,22 +309,12 @@ public class PlaceSearch extends AppCompatActivity {
 
     // ask for permission only if user denied it before but did not check "Don't ask again" checkbox
     private void requestPermissions() {
-        boolean shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(PlaceSearch.this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-      // if (shouldProvideRationale) {
-            Snackbar.make(this, findViewById(android.R.id.content), getString(R.string.place_search_permission_request), Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.allow), view -> {
-                        ActivityCompat.requestPermissions(PlaceSearch.this,
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                REQUEST_PERMISSIONS_REQUEST_CODE);
-                    }).show();
-       /*     showSnackbar(R.string.place_search_permission_request, R.string.allow, view -> { // Request permission
-                ActivityCompat.requestPermissions(this,
+        Snackbar.make(this, findViewById(android.R.id.content), getString(R.string.place_search_permission_request), Snackbar.LENGTH_INDEFINITE)
+            .setAction(getString(R.string.allow), view -> {
+                ActivityCompat.requestPermissions(PlaceSearch.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_PERMISSIONS_REQUEST_CODE);
-            }); */
-     //   }
-     //   else Log.e("logging", "not asking for permission because shouldProvideRationale is false");
+            }).show();
     }
 
     // After getting FINE_LOCATION permission sends users to settings to grant BACKGROUND_LOCATION permission
@@ -372,7 +331,6 @@ public class PlaceSearch extends AppCompatActivity {
             }
         }
     }
-
 
 
 }

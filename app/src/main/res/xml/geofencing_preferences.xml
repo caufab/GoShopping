@@ -28,7 +28,6 @@
         android:summary="Puoi aggiungere fino a 10 negozi"
         android:title="Scegli negozi"/>
 
-    <!--  scegliere giuste parole: reset può far intendere cancellazione totale (update?) -->
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
