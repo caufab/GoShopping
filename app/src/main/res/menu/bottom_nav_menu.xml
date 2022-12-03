@@ -9,7 +9,7 @@
     <item
         android:id="@+id/navigation_cardlist"
         android:icon="@drawable/ic_baseline_card_membership_24"
-        android:title="@string/title_ficardlist" />
+        android:title="@string/title_cardlist" />
 
 
 </menu>

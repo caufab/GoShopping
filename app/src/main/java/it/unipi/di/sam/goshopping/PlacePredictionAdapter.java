@@ -88,7 +88,7 @@ public class PlacePredictionAdapter extends RecyclerView.Adapter<PlacePrediction
     }
 
 
-    // Serve per settare un listenere da altre classi?
+    // Serve per settare un listener da altre classi?
     public void setPlaceClickListener(OnPlaceClickListener onPlaceClickListener) {
         this.onPlaceClickListener = onPlaceClickListener;
     }

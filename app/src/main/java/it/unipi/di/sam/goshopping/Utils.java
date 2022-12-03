@@ -12,19 +12,13 @@ import androidx.core.app.NotificationManagerCompat;
 
 public class Utils {
 
-    static String CHANNEL_ID = "Channel_ID"; // TODO: put in string.xml ?
-
-    // create notification channel ( API 26+ ) called from onCreate?
     public static void createNotificationChannel(Context context) {
         // TODO: if context != null
-        // notificationId = 1;
-        CharSequence name = "ChannelName"; // TODO: put in string.xml
-        String description = "ChannelDescription"; // TODO: put in string.xml
+        CharSequence name = context.getString(R.string.notification_channel_name); // TODO: put in string.xml
+        String description = context.getString(R.string.notification_channel_description); // TODO: put in string.xml
         int importance = NotificationManager.IMPORTANCE_DEFAULT;
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+        NotificationChannel channel = new NotificationChannel(context.getString(R.string.notification_channel_id), name, importance);
         channel.setDescription(description);
-        // Register the channel with the system; you can't change the importance
-        // or other notification behaviors after this
         NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
     }
@@ -35,13 +29,13 @@ public class Utils {
      */
     @SuppressWarnings("MissingPermission")
     public static void sendNotification(Context context, int notificationId, String title, String smallText, String bigText, PendingIntent pendingIntent) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))
                 .setSmallIcon(R.mipmap.app_icon_v1)
                 .setContentTitle(title)
                 .setContentText(smallText)
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(bigText)); // TODO: parameter if needed
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         builder.setAutoCancel(true);
         notificationManager.notify(notificationId, builder.build());
@@ -53,7 +47,10 @@ public class Utils {
     }
 
 
-    public static void showToast(Context context, String s) {
-        Toast.makeText(context, s, Toast.LENGTH_LONG).show();
+    public static void showToast(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+    public static void showToast(Context context, int messageResource) {
+        Toast.makeText(context, messageResource, Toast.LENGTH_LONG).show();
     }
 }

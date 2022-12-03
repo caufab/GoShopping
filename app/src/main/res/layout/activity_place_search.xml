@@ -50,7 +50,7 @@
             android:layout_margin="16dp"
             android:gravity="center"
             android:lineSpacingMultiplier="1.15"
-            android:text="Effettua una ricerca con la barra in alto e clicca sul luogo che vuoi aggiungere"
+            android:text="@string/place_search_main_hint"
             android:textSize="20sp" />
 
         <androidx.recyclerview.widget.RecyclerView

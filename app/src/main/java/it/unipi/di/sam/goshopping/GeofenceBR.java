@@ -26,8 +26,7 @@ public class GeofenceBR extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        if(!sharedPreferences.getBoolean("geofencing_switch", false)) {// user disabled geofencing
-            Log.e("logging", "shared pref false");
+        if(!sharedPreferences.getBoolean("geofencing_switch", false)) { // user disabled geofencing
             return;
         }
         GeofencingEvent gEvent = GeofencingEvent.fromIntent(intent);
@@ -65,7 +64,6 @@ public class GeofenceBR extends BroadcastReceiver {
                                     i++;
                                 }
                                 bigText += "...";
-                                Log.e("logging", "bigText: "+bigText);
                                 Intent notifIntent = new Intent(context, MainActivity.class);
                                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
                                 stackBuilder.addNextIntentWithParentStack(notifIntent);
@@ -73,8 +71,8 @@ public class GeofenceBR extends BroadcastReceiver {
                                         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                                 Utils.sendNotification(context,
                                         cursor.getInt(cursor.getColumnIndexOrThrow("_ID")),
-                                        "Sei presso " + cursor.getString(cursor.getColumnIndexOrThrow("name")) + " ?",
-                                        "Ecco i primi 5 elementi della tua lista della spesa:",
+                                        context.getString(R.string.are_you_at_place) + " " + cursor.getString(cursor.getColumnIndexOrThrow("name")) + " ?",
+                                        context.getString(R.string.notification_smalltext) + ":",
                                         bigText,
                                         pendingIntent);
                             }
@@ -84,10 +82,9 @@ public class GeofenceBR extends BroadcastReceiver {
                 } while(cursor.moveToNext());
 
                 if(!found) {
-                    Log.e("GeofenceBR", "Received a geofence transition but it was not in the database");
+                    Log.e("GeofenceBR_Error", "Received a geofence transition but it was not in the database");
                 }
             }
-        } else // Log the error
-            Log.e("Geofence", "Unknown geofence transition"); // Needed?
+        }
     }
 }

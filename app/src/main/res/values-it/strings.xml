@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_shoppinglist">Lista della spesa</string>
+    <string name="title_cardlist">Carte Fedeltà</string>
+    <string name="title_activity_settings">@string/settings</string>
+    <string name="place_search_activity_label">Ricerca Negozi</string>
+    <string name="new_card_activity_label">Nuova Carta Fedeltà</string>
+
+    <string name="geofencing_settings_header">Notifica In Negozio</string>
+
+    <string name="settings">Impostazioni</string>
+    <string name="allow">Consenti</string>
+    <string name="cancel">Annulla</string>
+    <string name="add">Aggiungi</string>
+    <string name="update">Aggiorna</string>
+    <string name="confirm">Conferma</string>
+    <string name="close">Chiudi</string>
+    <string name="remove">Elimina</string>
+
+    <string name="barcode_display_error">Impossibile visualizzare il codice a barre di questa carta. Prova ad reinserire il codice usando la fotocamera</string>
+    <string name="barcode_display_description">Immagine del codice a barre</string>
+    <string name="barcode_input_hint">Numero</string>
+    <string name="camera_scan_btn_description">Tasto per scansione con fotocamera</string>
+    <string name="card_name_input_hint">Nome Carta</string>
+    <string name="card_color_input_hint">Colore Carta</string>
+    <string name="remove_card">Elimina Carta</string>
+    <string name="place_search_main_hint">Effettua una ricerca con la barra in alto e clicca sul luogo che vuoi aggiungere alla Notifica in Negozio</string>
+    <string name="add_card_fab_description">Aggiungi una nuova carta</string>
+    <string name="edit_card_fab_description">Edit card</string>
+    <string name="shopping_item_input_hint">Inserisci un ingrediente…</string>
+    <string name="share_shopping_list">Condividi la lista della spesa</string>
+
+    <string name="search">Cerca</string>
+    <string name="share_shopping_list_intro_text">Ecco la mia lista della spesa</string>
+    <string name="are_you_at_place">Ti trovi presso</string>
+    <string name="notification_smalltext">Ecco i primi 5 elementi della tua lista della spesa</string>
+    <string name="share_empty_list_info">Non ci sono elementi da condividere</string>
+    <string name="edit_card_color_load_error">Impossibile caricare il colore. Riseleziona il colore della carta</string>
+    <string name="remove_card_confirm_message">Sei sicuro di voler eliminare la carta</string>
+    <string name="camera_scan_flash_hint">Usa Volume Su per il flash</string>
+    <string name="search_place_hint">Cerca un negozio</string>
+    <string name="error_occurred_retry">Si è verificato un errore, riprova</string>
+    <string name="add_place_dialog_title">Vuoi aggiungerlo ai tuoi luoghi?</string>
+    <string name="place_limit_reached_dialog_title">Limite raggiunto</string>
+    <string name="place_limit_reached_dialog_message">Hai già 10 negozi registrati, elimina qualcuno per aggiungerne di nuovi</string>
+    <string name="about_dialog_message">Questa app è stata realizzata interamente da Fabrizio Cau, per un progetto didattico per il corso di SAM all\'Università di Pisa</string>
+
+    <string name="active_places">Luoghi attivi</string>
+    <string name="place_remove_confirm_dialog_title">Conferma eliminazione</string>
+    <string name="place_remove_confirm_dialog_message_intro">Sei sicuro di voler eliminare</string>
+    <!-- Request permission messages -->
+    <string name="allow_notification_from_settings_message">Vai su impostazioni e abilita la ricezione delle notifiche</string>
+    <string name="allow_background_position_from_settings_message">Vai su impostazioni, clicca su Autorizzazioni, Posizione e clicca su \'Consenti sempre\'</string>
+    <string name="permissions_must_be_allowed_message">E\' necessario consentire le autorizzazioni richieste per poter usufruire del servizio Notifica In Negozio</string>
+    <string name="request_permission_title">Autorizzazione richiesta</string>
+    <string name="next_click_allow_always_permission_message">Nella schermata successiva clicca su \'Consenti sempre\'</string>
+    <string name="place_search_permission_request">La funzionalità Notifica In Negozio necessita di accedere alla posizione mentre l\'app non è in uso. Concedi i permessi e clicca su \'Consenti sempre\'</string>
+    <!-- Notifications -->
+    <string name="notification_channel_description">Abilita questo canale per ricevere una notifica con i primi articoli della tua lista quando vai a fare la spesa nei tuoi negozi preferiti</string>
+    <string name="notification_channel_name">Notifiche In Negozio</string>
+    <!--  -->
+</resources>

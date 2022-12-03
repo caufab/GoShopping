@@ -32,11 +32,8 @@ public class CLFragment extends Fragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         bcUtils = new BarcodeUtils();
-
         CLA = new CLAdapter();
-
     }
 
     public static class UpdateCursor implements Runnable {
@@ -87,7 +84,7 @@ public class CLFragment extends Fragment {
 
         rvc = (RecyclerView) root.findViewById(R.id.cardlist_rv);
         rvc.setHasFixedSize(true);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(root.getContext());
         int spanCount = Integer.parseInt(sharedPreferences.getString("card_list_span_count", "1"));
         GridLayoutManager llm = new GridLayoutManager(getContext(), spanCount);
 
@@ -101,12 +98,9 @@ public class CLFragment extends Fragment {
         return root;
     }
 
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
     }
-
-
 
 }

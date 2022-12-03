@@ -147,7 +147,7 @@ public class PlaceSearch extends AppCompatActivity {
 
 
     private void initSearchView(SearchView searchView) {
-        searchView.setQueryHint("Cerca un luogo");
+        searchView.setQueryHint(getString(R.string.search_place_hint));
         searchView.setIconifiedByDefault(false);
         searchView.setFocusable(true);
         searchView.setIconified(false);
@@ -190,14 +190,14 @@ public class PlaceSearch extends AppCompatActivity {
             responseTask.addOnSuccessListener(fetchPlaceResponse -> {
                 LatLng latLng = fetchPlaceResponse.getPlace().getLatLng();
                 if(latLng == null) {
-                    Utils.showToast(this,"Si è verificato un errore, riprova");
+                    Utils.showToast(this,getString(R.string.error_occurred_retry));
                     return;
                 }
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 if(count < Constants.Geofences.MAX_GEOFENCES) {
-                    builder.setTitle("Vuoi aggiungerlo ai tuoi luoghi?");
+                    builder.setTitle(R.string.add_place_dialog_title);
                     builder.setMessage(place.getPrimaryText(null)+"\n("+place.getSecondaryText(null)+")");
-                    builder.setPositiveButton("Aggiungi", (dialog, which) -> {
+                    builder.setPositiveButton(R.string.add, (dialog, which) -> {
                         MainActivity.db.insertGeofence(
                                 place.getPlaceId(),
                                 String.valueOf(place.getPrimaryText(null)),
@@ -206,18 +206,17 @@ public class PlaceSearch extends AppCompatActivity {
                         addGeofence(place.getPlaceId(), latLng);
                         count++;
                         dialog.dismiss();
-                    }).setNegativeButton("Annulla", (dialog, which) -> dialog.dismiss());
+                    }).setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
                 } else {
-                    builder.setTitle("Limite raggiunto");
-                    builder.setMessage("Hai già 10 negozi registrati, elimina qualcuno per aggiungerne di nuovi");
+                    builder.setTitle(R.string.place_limit_reached_dialog_title);
+                    builder.setMessage(R.string.place_limit_reached_dialog_message);
                     builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss() );
                 }
 
                 builder.show();
             }).addOnFailureListener(exception -> {
-                // TODO: just post a toast saying there was an error
-                Utils.showToast(this,"Si è verificato un errore, riprova");
-                Log.e("Places", "fetch place error: "+exception.getMessage());
+                Utils.showToast(this,R.string.error_occurred_retry);
+                Log.e("PlaceSearch_Error", "Fetch place error: "+exception.getMessage());
             });
         });
     }
@@ -259,7 +258,7 @@ public class PlaceSearch extends AppCompatActivity {
             }).addOnFailureListener(exception -> {
                 if(exception instanceof ApiException) {
                     ApiException apiException = (ApiException) exception;
-                    Log.e(TAG, "Place not found: "+apiException.getStatusCode());
+                    Log.e("PlaceSearch_Error", "Place not found: "+apiException.getStatusCode());
                 }
             });
     }
@@ -275,8 +274,8 @@ public class PlaceSearch extends AppCompatActivity {
             requestPermissions();
         else
             geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent())
-                .addOnSuccessListener(unused -> { Log.d("geofences", "Success on adding geofences"); })
-                .addOnFailureListener(e -> { Log.e("geofences", "Failed adding geofences"); e.printStackTrace(); });
+                .addOnSuccessListener(unused -> { Log.d("Geofences", "Success on adding geofences"); })
+                .addOnFailureListener(e -> { Log.e("Geofences_Error", "Failed adding geofences"); e.printStackTrace(); });
     }
 
     // FLAG_MUTABLE sets a warning as it requires API level 31, yet it works fine in Nexus 5 (API 27)

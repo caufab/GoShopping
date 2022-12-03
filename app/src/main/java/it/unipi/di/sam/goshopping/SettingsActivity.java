@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -34,8 +35,6 @@ import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
-
-    private static final String TITLE_TAG = "Impostazioni";
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     @Override
@@ -48,7 +47,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                     .replace(R.id.settings, new HeaderFragment())
                     .commit();
         } else {
-            setTitle(savedInstanceState.getCharSequence(TITLE_TAG));
+            setTitle(savedInstanceState.getCharSequence(getString(R.string.settings)));
         }
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
@@ -63,7 +62,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save current activity title so we can set it again after a configuration change
-        outState.putCharSequence(TITLE_TAG, getTitle());
+        outState.putCharSequence(getString(R.string.settings), getTitle());
     }
 
     @Override
@@ -98,7 +97,6 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
 
             ListPreference themePref = findPreference("theme_preference");
             themePref.setOnPreferenceChangeListener((preference, newValue) -> {
-                Log.e("logging", "new value: "+newValue.toString());
                 switch (newValue.toString()) {
                     case "light":
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -114,11 +112,13 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
             });
 
             Preference infoPreference = findPreference("info_preference");
+            assert infoPreference != null;
             infoPreference.setOnPreferenceClickListener(preference -> {
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
-                builder.setTitle("GoShopping");
-                builder.setMessage("App made by Fabrizio Cau. Have fun");
-                builder.setPositiveButton("Chiudi", (dialog, which) -> dialog.dismiss());
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(infoPreference.getContext());
+                builder.setTitle(getString(R.string.app_name)+" v"+BuildConfig.VERSION_CODE);
+                builder.setMessage(R.string.about_dialog_message);
+                builder.setPositiveButton(R.string.close, (dialog, which) -> dialog.dismiss());
+                builder.setIcon(R.mipmap.app_icon_v1);
                 builder.show();
                 return false;
             });
@@ -189,7 +189,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
             public void run() {
                 activePlaces.removeAll();
                 count = cursor.getCount();
-                activePlaces.setTitle("Luoghi attivi ("+count+")");
+                activePlaces.setTitle(activePlaces.getContext().getString(R.string.active_places)+" ("+count+")");
                 newSearch.setEnabled(count < Constants.Geofences.MAX_GEOFENCES); // enable new search button only if active geofences are < 10
                 while(cursor.moveToNext()) {
                     Preference place = new Preference(activePlaces.getContext());
@@ -203,18 +203,18 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                     place.setPersistent(false);
                     place.setOnPreferenceClickListener(preference -> { // Dialog to confirm delete
                         AlertDialog.Builder builder = new AlertDialog.Builder(preference.getContext());
-                        builder.setTitle("Conferma eliminazione");
-                        builder.setMessage("Sei sicuro di voler eliminare "+name);
-                        builder.setPositiveButton("Elimina", (dialogInterface, i) -> {
+                        builder.setTitle(R.string.place_remove_confirm_dialog_title);
+                        builder.setMessage(builder.getContext().getString(R.string.place_remove_confirm_dialog_message_intro)+" "+name);
+                        builder.setPositiveButton(R.string.remove, (dialogInterface, i) -> {
                             preference.setEnabled(false);
                             MainActivity.db.removeGeofence(placeId);
                             removeGeofenceId(placeId);
                             activePlaces.removePreference(preference);
                             count--;
-                            activePlaces.setTitle("Luoghi attivi ("+count+")");
+                            activePlaces.setTitle(activePlaces.getContext().getString(R.string.active_places)+" ("+count+")");
                             if(!newSearch.isEnabled()) newSearch.setEnabled(true); // re-enable new search button
                             dialogInterface.dismiss();
-                        }).setNegativeButton("Annulla", (dialogInterface, i) -> dialogInterface.dismiss()).show();
+                        }).setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss()).show();
                         return false;
                     });
                     activePlaces.addPreference(place);
@@ -249,7 +249,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
             geofenceIdList.add(geofenceId);
             mGeofencingClient.removeGeofences(geofenceIdList)
                     .addOnSuccessListener(unused -> { Log.d("Geofencing", "Success on removing geofence"); })
-                    .addOnFailureListener(e -> { Log.d("Geofencing", "Failed to removing geofence"); e.printStackTrace(); } );
+                    .addOnFailureListener(e -> { Log.d("Geofencing_Error", "Failed to removing geofence"); e.printStackTrace(); } );
         }
 
 
@@ -263,22 +263,22 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
         if(requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if(grantResults.length > 0) {
                 if(grantResults[0] == PackageManager.PERMISSION_DENIED ) {
-                    String message = "";
+                    String message;
                     if(permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS))
-                        message = "Vai su impostazioni e abilita la ricezione delle notifiche";
+                        message = getString(R.string.allow_notification_from_settings_message);
                     else if(permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION))
-                        message = "Vai su impostazioni, clicca su Autorizzazioni -> Posizione e scegli l'opzione 'Consenti sempre'";
-                    else message = "E' necessario concedere le autorizzazioni richieste per utilizzare il servizio di geofencing";
+                        message = getString(R.string.allow_background_position_from_settings_message);
+                    else message = getString(R.string.permissions_must_be_allowed_message);
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Autorizzazione richiesta");
+                    builder.setTitle(R.string.request_permission_title);
                     builder.setMessage(message);
-                    builder.setPositiveButton("Impostazioni", (dialog, which) -> {
+                    builder.setPositiveButton(R.string.settings, (dialog, which) -> {
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         Uri uri = Uri.fromParts("package", getPackageName(), null);
                         intent.setData(uri);
                         startActivity(intent);
                         dialog.dismiss();
-                    }).setNegativeButton("Annulla", (dialog, which) -> {
+                    }).setNegativeButton(R.string.cancel, (dialog, which) -> {
                         dialog.dismiss();
                     }).show();
 
@@ -286,12 +286,12 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                 //        !(permissions[0].equals(Manifest.permission.ACCESS_BACKGROUND_LOCATION) || permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS))) {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setTitle("Autorizzazione richiesta");
-                        builder.setMessage("Nella schermata successiva clicca su 'Consenti sempre'");
+                        builder.setTitle(R.string.request_permission_title);
+                        builder.setMessage(R.string.next_click_allow_always_permission_message);
                         builder.setPositiveButton("Ok", (dialog, which) -> {
                             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
                             dialog.dismiss();
-                        }).setNegativeButton("Annulla", (dialog, which) -> {
+                        }).setNegativeButton(R.string.cancel, (dialog, which) -> {
                             dialog.dismiss();
                         }).show();
                     }
@@ -301,10 +301,5 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
 
         }
     }
-
-
-
-
-
 
 }

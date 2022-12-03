@@ -32,7 +32,7 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="Add new card" />
+        android:contentDescription="@string/add_card_fab_description" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/edit_card_fab"
@@ -45,7 +45,7 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="Add new card" />
+        android:contentDescription="@string/edit_card_fab_description" />
 
     <View
         android:id="@+id/show_card_overlay"
@@ -106,7 +106,7 @@
                     android:paddingHorizontal="10dp"
                     android:gravity="center_horizontal"
                     android:textColor="#868686"
-                    android:text="Impossibile visualizzare il codice a barre di questa carta. Prova a reinserire il codice usando la fotocamera"
+                    android:text="@string/barcode_display_error"
                     app:layout_constraintTop_toTopOf="@id/barcode_image"
                     app:layout_constraintBottom_toBottomOf="@id/barcode_image"/>
 
@@ -114,7 +114,7 @@
                     android:id="@+id/barcode_image"
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
-                    android:contentDescription="Barcode generated image"
+                    android:contentDescription="@string/barcode_display_description"
                     app:layout_constraintBottom_toTopOf="@id/barcode_text"
                     app:layout_constraintTop_toTopOf="parent"/>
 

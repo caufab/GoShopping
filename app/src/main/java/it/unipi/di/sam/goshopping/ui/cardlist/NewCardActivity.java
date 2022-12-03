@@ -68,21 +68,21 @@ public class NewCardActivity extends AppCompatActivity {
             String hexColor = String.format("#%06X",(0xFFFFFF & color));
             radioButton = (RadioButton) radioGroup.findViewWithTag(hexColor);
             if(radioButton != null) radioButton.setChecked(true);
-            else Toast.makeText(this, "Impossibile caricare il colore. Riseleziona il colore della carta", Toast.LENGTH_LONG).show();
+            else Toast.makeText(this, R.string.edit_card_color_load_error, Toast.LENGTH_LONG).show();
 
 
-            addCardBtn.setText("Aggiorna");
+            addCardBtn.setText(R.string.update);
             remCardBtn.setVisibility(View.VISIBLE);
 
             remCardBtn.setOnClickListener(view -> {
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                builder.setTitle("Elimina carta");
-                builder.setMessage("Sei sicuro di voler eliminare la carta "+b.getString("name"));
-                builder.setPositiveButton("Conferma", (dialogInterface, i) -> {
+                builder.setTitle(R.string.remove_card);
+                builder.setMessage(getString(R.string.remove_card_confirm_message)+" "+b.getString("name"));
+                builder.setPositiveButton(R.string.confirm, (dialogInterface, i) -> {
                     MainActivity.db.removeCard(b.getInt("id"), b.getInt("rv_pos"));
                     dialogInterface.dismiss();
                     finish();
-                }).setNegativeButton("Annulla", (dialogInterface, i) -> dialogInterface.dismiss()).show();
+                }).setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss()).show();
 
             });
 
@@ -99,14 +99,14 @@ public class NewCardActivity extends AppCompatActivity {
                 });
         }
         else { // new card use case
-            addCardBtn.setText("Aggiungi");
+            addCardBtn.setText(R.string.add);
             remCardBtn.setVisibility(View.GONE);
         }
 
         // scan barcode with camera
         btn_scan.setOnClickListener(view -> {
             ScanOptions options = new ScanOptions();
-            options.setPrompt("Volume up to flash on");
+            options.setPrompt(getString(R.string.camera_scan_flash_hint));
             options.setBeepEnabled(true);
             options.setOrientationLocked(true);
             options.setCaptureActivity(CaptureAct.class);

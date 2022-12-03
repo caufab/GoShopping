@@ -32,13 +32,11 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
         int id, usedTimes;
         int bgColor;
 
-
         public CLViewHolder(@NonNull View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.card_cv);
             tv = (TextView) itemView.findViewById(R.id.card_name);
         }
-
     }
 
     @Override
@@ -135,7 +133,6 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
         });
     }
 
-
     public static void backToFragment(View overlay, CardView popupCL, ImageView barcodeImageView, FloatingActionButton fabEdit) {
         overlay.setVisibility(View.GONE);
         popupCL.setVisibility(View.GONE);
@@ -143,6 +140,5 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
         barcodeImageView.setImageDrawable(null);
         CLFragment.fabAdd.setVisibility(View.VISIBLE);
     }
-
 
 }

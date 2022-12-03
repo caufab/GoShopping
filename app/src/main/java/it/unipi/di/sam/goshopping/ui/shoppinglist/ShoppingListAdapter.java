@@ -27,13 +27,10 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             cv = (CardView) itemView.findViewById(R.id.card_view);
             tv = (TextView) itemView.findViewById(R.id.shoppingitem_text);
             cl = (ConstraintLayout) itemView.findViewById(R.id.input_item_cl);
-
         }
     }
 
-
     public ShoppingListAdapter() {
-
     }
 
     @Override
@@ -49,7 +46,6 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         return new ShoppingListViewHolder(v);
     }
 
-
     String tmp;
 
     @Override
@@ -60,23 +56,16 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             holder.item = SLFragment.cursor.getString(SLFragment.cursor.getColumnIndexOrThrow("item"));
         }
 
-
         tmp = holder.item;
         holder.tv.setText(tmp);
 
-        holder.cv.setOnClickListener(view ->
-                MainActivity.db.removeItem(holder.id, holder.getAdapterPosition()));
-
+        holder.cv.setOnClickListener(view -> MainActivity.db.removeItem(holder.id, holder.getAdapterPosition()));
 
         holder.cv.setOnLongClickListener(view -> {
             SLFragment.editItem(holder);
             return true;
         });
 
-
     }
-
-
-
 
 }

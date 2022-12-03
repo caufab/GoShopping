@@ -56,7 +56,7 @@
             android:elevation="0dp"
             android:textColorHint="@color/iconOnBackground"
             android:digits="QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm £$%&amp;,.;:_òàèù+°\1234567890'ì/*-+()[]{}"
-            android:hint="Inserisci un item..."
+            android:hint="@string/shopping_item_input_hint"
             android:paddingHorizontal="15dp"
             android:paddingVertical="5dp"
             android:singleLine="true"

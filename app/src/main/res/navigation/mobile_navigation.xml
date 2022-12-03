@@ -14,7 +14,7 @@
     <fragment
         android:id="@+id/navigation_cardlist"
         android:name="it.unipi.di.sam.goshopping.ui.cardlist.CLFragment"
-        android:label="@string/title_ficardlist"
+        android:label="@string/title_cardlist"
         tools:layout="@layout/fragment_cardlist" />
 
 

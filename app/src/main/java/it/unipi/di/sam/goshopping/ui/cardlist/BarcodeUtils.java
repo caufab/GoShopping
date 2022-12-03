@@ -46,7 +46,7 @@ public class BarcodeUtils extends Activity {
                 Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
                 runOnUiThread(new postImage(imageView, bitmap));
             } catch (Exception e) {
-                Log.e("error code", "Error: " + e.getMessage());
+                Log.e("Barcode_Error", "Error with barcode generation: " + e.getMessage());
                 runOnUiThread(new postImage(imageView, null));
             }
         });

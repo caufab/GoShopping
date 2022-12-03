@@ -75,7 +75,6 @@ public class SLFragment extends Fragment {
                 default:
                     break;
             }
-
         }
     }
 
@@ -88,15 +87,13 @@ public class SLFragment extends Fragment {
         rv = (RecyclerView) root.findViewById(R.id.shoppinglist_rv);
         rv.setHasFixedSize(true);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(root.getContext());
         int spanCount = Integer.parseInt(sharedPreferences.getString("shopping_list_span_count", "1"));
         GridLayoutManager llm = new GridLayoutManager(getContext(), spanCount);
 
         rv.setLayoutManager(llm);
 
-
         MainActivity.db.slQuery();
-
 
         EditText et = (EditText) root.findViewById(R.id.new_item_input);
         Button addItemBtn = (Button) root.findViewById(R.id.input_item_btn_add);

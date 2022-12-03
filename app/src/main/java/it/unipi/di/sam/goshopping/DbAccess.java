@@ -181,7 +181,7 @@ public class DbAccess extends Activity {
             if(cursor.getCount() == 0)
                 runOnUiThread(new MainActivity.ShareList(context, null));
             else {
-                strList.append("Ecco la mia lista della spesa:\n");
+                strList.append(getString(R.string.share_shopping_list_intro_text)).append(":\n");
                 while (cursor.moveToNext())
                     strList.append(cursor.getString(cursor.getColumnIndexOrThrow("item"))).append("\n");
                 runOnUiThread(new MainActivity.ShareList(context, strList.toString()));
