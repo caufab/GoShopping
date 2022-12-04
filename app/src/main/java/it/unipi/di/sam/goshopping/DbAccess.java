@@ -160,10 +160,10 @@ public class DbAccess extends Activity {
 
     // Methods for shopping list Items
 
-    public void insertItem (String table, String nullColumnHack, ContentValues val) {
+    public void insertItem (ContentValues val) {
         Thread T = new Thread(() -> {
             SQLiteDatabase db = mOH.getWritableDatabase();
-            db.insert(table, nullColumnHack, val);
+            db.insert(shoppinglist_table_name, null, val);
             Cursor cursor = db.query(shoppinglist_table_name, null, null, null, null, null, "_ID");
             runOnUiThread(new SLFragment.UpdateCursor(cursor,"insert"));
         });

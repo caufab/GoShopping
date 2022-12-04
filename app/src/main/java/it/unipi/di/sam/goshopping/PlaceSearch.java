@@ -123,7 +123,7 @@ public class PlaceSearch extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.place_search_menu, menu);
         SearchMenuItem = menu.findItem(R.id.search);
         SearchMenuItem.setEnabled(false);
-        MainActivity.db.getGeofenceCount();
+        AppMain.getDb().getGeofenceCount();
         SearchView searchView = (SearchView) SearchMenuItem.getActionView();
         initSearchView(searchView);
         return super.onCreateOptionsMenu(menu);
@@ -268,7 +268,7 @@ public class PlaceSearch extends AppCompatActivity {
         if(!checkPermissions())
             requestPermissions();
         else { // user has permission -> add place to geofence client and db
-            MainActivity.db.insertGeofence(
+            AppMain.getDb().insertGeofence(
                     place.getPlaceId(),
                     String.valueOf(place.getPrimaryText(null)),
                     String.valueOf(place.getSecondaryText(null)),

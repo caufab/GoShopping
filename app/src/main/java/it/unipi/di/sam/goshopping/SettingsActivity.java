@@ -207,7 +207,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                         builder.setMessage(builder.getContext().getString(R.string.place_remove_confirm_dialog_message_intro)+" "+name);
                         builder.setPositiveButton(R.string.remove, (dialogInterface, i) -> {
                             preference.setEnabled(false);
-                            MainActivity.db.removeGeofence(placeId);
+                            AppMain.getDb().removeGeofence(placeId);
                             removeGeofenceId(placeId);
                             activePlaces.removePreference(preference);
                             count--;
@@ -225,11 +225,8 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
         @Override
         public void onResume() {
             super.onResume();
-            if (MainActivity.db == null) {
-                startActivity(new Intent(getContext(), MainActivity.class));
-                return;
-            }
-            MainActivity.db.getGeofences();
+
+            AppMain.getDb().getGeofences();
 
             if(!checkFinePosPermission() || !checkBgPosPermission() || !checkNotifPermission()) {
                 sharedPreferences.edit().putBoolean("geofencing_switch", false).apply();

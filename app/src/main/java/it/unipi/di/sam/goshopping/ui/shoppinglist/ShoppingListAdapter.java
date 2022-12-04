@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import it.unipi.di.sam.goshopping.AppMain;
 import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
 
@@ -59,7 +60,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         tmp = holder.item;
         holder.tv.setText(tmp);
 
-        holder.cv.setOnClickListener(view -> MainActivity.db.removeItem(holder.id, holder.getAdapterPosition()));
+        holder.cv.setOnClickListener(view -> AppMain.getDb().removeItem(holder.id, holder.getAdapterPosition()));
 
         holder.cv.setOnLongClickListener(view -> {
             SLFragment.editItem(holder);

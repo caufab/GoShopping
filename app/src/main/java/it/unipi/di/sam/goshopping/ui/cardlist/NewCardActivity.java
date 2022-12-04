@@ -22,6 +22,7 @@ import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
+import it.unipi.di.sam.goshopping.AppMain;
 import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
 
@@ -79,7 +80,7 @@ public class NewCardActivity extends AppCompatActivity {
                 builder.setTitle(R.string.remove_card);
                 builder.setMessage(getString(R.string.remove_card_confirm_message)+" "+b.getString("name"));
                 builder.setPositiveButton(R.string.confirm, (dialogInterface, i) -> {
-                    MainActivity.db.removeCard(b.getInt("id"), b.getInt("rv_pos"));
+                    AppMain.getDb().removeCard(b.getInt("id"), b.getInt("rv_pos"));
                     dialogInterface.dismiss();
                     finish();
                 }).setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss()).show();
@@ -128,9 +129,9 @@ public class NewCardActivity extends AppCompatActivity {
             color = radioButton.getButtonTintList().getDefaultColor(); // update color only if color radio button was found
 
             if (b == null) // add mode
-                MainActivity.db.addCard(cardName.getText().toString(), barcodeET.getText().toString(), barcodeFormat, color);
+                AppMain.getDb().addCard(cardName.getText().toString(), barcodeET.getText().toString(), barcodeFormat, color);
             else // edit mode/
-                MainActivity.db.updateCard(b.getInt("id"), cardName.getText().toString(), barcodeET.getText().toString(), barcodeFormat, color, b.getInt("rv_pos"));
+                AppMain.getDb().updateCard(b.getInt("id"), cardName.getText().toString(), barcodeET.getText().toString(), barcodeFormat, color, b.getInt("rv_pos"));
             finish();
         });
         // barcode has changed

@@ -26,8 +26,6 @@ import it.unipi.di.sam.goshopping.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static DbAccess db;
-
     private ActivityMainBinding binding;
 
     @Override
@@ -36,10 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SetTheme(sharedPreferences.getString("theme_preference", "systems"));
-
-
-        // TODO: move this to a public static method get returns a DbAccess object after checking if DbAccess is not null
-        db = new DbAccess(this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -69,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else if(item.getItemId() == R.id.share_list) {
-            db.getShareableList(this);
+            AppMain.getDb().getShareableList(this);
             return true;
         } else
             return super.onOptionsItemSelected(item);

@@ -56,7 +56,6 @@ public class GeofenceBR extends BroadcastReceiver {
                         if(gTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
                             Cursor shoppingListCursor = db.getTopItems(Constants.NOTIFICATION_MAX_ITEMS);
                             if(shoppingListCursor.getCount() != 0) {
-                                Log.e("logging", "count: "+shoppingListCursor.getCount());
                                 String bigText = "";
                                 int i = 1;
                                 while(shoppingListCursor.moveToNext() && i<=5) {

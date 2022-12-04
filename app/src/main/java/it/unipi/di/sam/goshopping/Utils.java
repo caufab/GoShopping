@@ -5,10 +5,12 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.graphics.Color;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 public class Utils {
 
@@ -30,7 +32,8 @@ public class Utils {
     @SuppressWarnings("MissingPermission")
     public static void sendNotification(Context context, int notificationId, String title, String smallText, String bigText, PendingIntent pendingIntent) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))
-                .setSmallIcon(R.mipmap.app_icon_v1)
+                .setSmallIcon(R.drawable.notification_icon_v1)
+                .setColor(ContextCompat.getColor(context, R.color.red_primaryLight))
                 .setContentTitle(title)
                 .setContentText(smallText)
                 .setContentIntent(pendingIntent)

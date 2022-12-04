@@ -28,7 +28,6 @@
         android:title="@string/preference_add_place"
         android:summary="@string/preference_add_place_summary"/>
 
-
     <PreferenceCategory
         app:iconSpaceReserved="false"
         android:key="active_places"

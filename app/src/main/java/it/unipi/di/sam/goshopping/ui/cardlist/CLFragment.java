@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import it.unipi.di.sam.goshopping.AppMain;
 import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
 
@@ -90,7 +92,7 @@ public class CLFragment extends Fragment {
 
         rvc.setLayoutManager(llm);
 
-        MainActivity.db.clQuery();
+        AppMain.getDb().clQuery();
 
         fabAdd = (FloatingActionButton) root.findViewById(R.id.add_card_fab);
         fabAdd.setOnClickListener(view -> startActivity(new Intent(getContext(), NewCardActivity.class)));

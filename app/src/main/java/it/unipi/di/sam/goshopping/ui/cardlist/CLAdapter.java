@@ -16,8 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-
-import it.unipi.di.sam.goshopping.MainActivity;
+import it.unipi.di.sam.goshopping.AppMain;
 import it.unipi.di.sam.goshopping.R;
 
 public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
@@ -129,7 +128,7 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
 
         overlay.setOnClickListener(view -> {
             backToFragment(overlay,popupCL, barcodeImageView,fabEdit);
-            MainActivity.db.incrementCardUsedTimes(holder.id, holder.usedTimes+1);
+            AppMain.getDb().incrementCardUsedTimes(holder.id, holder.usedTimes+1);
         });
     }
 

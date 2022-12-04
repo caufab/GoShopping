@@ -18,7 +18,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import it.unipi.di.sam.goshopping.DbAccess;
+import it.unipi.di.sam.goshopping.AppMain;
 import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
 
@@ -93,7 +93,7 @@ public class SLFragment extends Fragment {
 
         rv.setLayoutManager(llm);
 
-        MainActivity.db.slQuery();
+        AppMain.getDb().slQuery();
 
         EditText et = (EditText) root.findViewById(R.id.new_item_input);
         Button addItemBtn = (Button) root.findViewById(R.id.input_item_btn_add);
@@ -106,7 +106,7 @@ public class SLFragment extends Fragment {
                     if(p == -1) {
                         // TODO: also if item is not already in list (check with query or in cursor?)
                         newVal.put("item", str);
-                        MainActivity.db.insertItem(DbAccess.shoppinglist_table_name, null, newVal);
+                        AppMain.getDb().insertItem( newVal);
                     } else {
                         rv.scrollToPosition(p);
                     }
@@ -152,7 +152,7 @@ public class SLFragment extends Fragment {
                     if (p != -1) // item is not in list
                         rv.scrollToPosition(p);
                     else // if(element is in database) equals to inserting element that already exists in db
-                        MainActivity.db.updateItem(holder.id, holder.getAdapterPosition(), str);
+                        AppMain.getDb().updateItem(holder.id, holder.getAdapterPosition(), str);
                 }
             }
             undo.setVisibility(View.GONE);
