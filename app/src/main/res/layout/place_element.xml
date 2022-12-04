@@ -14,8 +14,7 @@
             android:paddingEnd="38dp"
             android:maxLines="1"
             android:textStyle="bold"
-            android:textSize="18sp"
-            tools:text="Place Name" /> <!-- FIXME: remove it -->
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/text_view_address"
@@ -24,15 +23,13 @@
             android:layout_alignParentBottom="true"
             android:maxLines="1"
             android:paddingEnd="35dp"
-            android:textSize="16sp"
-            tools:text="123 Main Street, San Francisco, CA USA" /> <!-- FIXME: remove it -->
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/distance_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:maxLines="2"
-
             android:maxWidth="60dp"
             android:layout_alignParentEnd="true"
             android:gravity="center"/>

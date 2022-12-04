@@ -6,8 +6,6 @@
     <string name="place_search_activity_label">Ricerca Negozi</string>
     <string name="new_card_activity_label">Nuova Carta Fedeltà</string>
 
-    <string name="geofencing_settings_header">Notifica In Negozio</string>
-
     <string name="settings">Impostazioni</string>
     <string name="allow">Consenti</string>
     <string name="cancel">Annulla</string>
@@ -58,5 +56,24 @@
     <!-- Notifications -->
     <string name="notification_channel_description">Abilita questo canale per ricevere una notifica con i primi articoli della tua lista quando vai a fare la spesa nei tuoi negozi preferiti</string>
     <string name="notification_channel_name">Notifiche In Negozio</string>
+    <string name="preference_about">Informazioni</string>
+    <string name="preference_appearance">Aspetto</string>
+    <string name="preference_shopping_items_span">Numero di articoli della spesa per riga</string>
+    <string name="preference_cards_span">Numero di carte per riga</string>
+    <string name="preference_order_card_by">Ordina carte per utilizzo</string>
+    <string name="theme_entry_systems">Tema di sistema</string>
+    <string name="theme_entry_dark">Scuro</string>
+    <string name="theme_entry_light">Chiaro</string>
+    <string name="preference_enable_geofencing">Attiva</string>
+    <string name="preference_add_place">Aggiungi un luogo</string>
+    <string name="preference_enable_geofencing_summary_on">Notifica In Negozio è attiva</string>
+    <string name="preference_enable_geofencing_summary_off">Notifica In Negozio è disattivata</string>
+    <string name="preference_add_place_summary">Puoi aggiungere fino a 10 luoghi</string>
+    <string name="preference_order_card_by_summary_on">Le carte verranno ordinate per utilizzo</string>
+    <string name="preference_order_card_by_summary_off">Le carte verranno ordinate in base all\'inserimemento</string>
+    <string name="preference_grant_permissions">Abilita i permessi</string>
+    <string name="preference_grant_permissions_summary">Alcuni permessi non sono ancora abilitati</string>
+    <string name="preference_geofencing_summary">Questa funzionalità ti permette di ricevere una notifica contenente i primi articoli della tua lista tutte le volte che andrai a fare la spesa nei tuoi negozi di fiducia</string>
+    <string name="preference_geofencing_header">Notifica In Negozio</string>
     <!--  -->
 </resources>

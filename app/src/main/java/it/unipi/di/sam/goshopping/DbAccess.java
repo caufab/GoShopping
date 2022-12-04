@@ -24,9 +24,6 @@ public class DbAccess extends Activity {
     public static final String geofences_table_name = "geofences";
     public static final int DATABASE_VERSION = 2;
 
-
-
-
     // Database creator
     private static class mSQLiteOH extends SQLiteOpenHelper {
 
@@ -181,7 +178,8 @@ public class DbAccess extends Activity {
             if(cursor.getCount() == 0)
                 runOnUiThread(new MainActivity.ShareList(context, null));
             else {
-                strList.append(getString(R.string.share_shopping_list_intro_text)).append(":\n");
+
+                strList.append(context.getString(R.string.share_shopping_list_intro_text)).append(":\n");
                 while (cursor.moveToNext())
                     strList.append(cursor.getString(cursor.getColumnIndexOrThrow("item"))).append("\n");
                 runOnUiThread(new MainActivity.ShareList(context, strList.toString()));

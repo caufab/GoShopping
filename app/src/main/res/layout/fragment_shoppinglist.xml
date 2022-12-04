@@ -49,27 +49,27 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_marginEnd="10dp"
-            android:inputType="textCapSentences"
             android:background="@drawable/rounded_textinput_bg"
             android:backgroundTint="@color/new_item_et_bg"
-            android:textColor="@color/iconOnBackground"
-            android:elevation="0dp"
-            android:textColorHint="@color/iconOnBackground"
             android:digits="QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm £$%&amp;,.;:_òàèù+°\1234567890'ì/*-+()[]{}"
+            android:elevation="0dp"
             android:hint="@string/shopping_item_input_hint"
+            android:inputType="textCapSentences"
             android:paddingHorizontal="15dp"
             android:paddingVertical="5dp"
             android:singleLine="true"
+            android:textColor="@color/sl_item_text"
+            android:textColorHint="@color/sl_item_hint"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/input_btns_cl"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/input_btns_cl"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -81,12 +81,12 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_baseline_add_circle_24"
-                android:foreground="?selectableItemBackgroundBorderless"
                 android:clickable="true"
-                app:layout_constraintStart_toStartOf="parent"
+                android:foreground="?selectableItemBackgroundBorderless"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
 
             <Button
                 android:id="@+id/input_item_btn_done"

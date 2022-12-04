@@ -15,7 +15,6 @@
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true">
 
-
     <RelativeLayout
         android:paddingStart="14dp"
         android:paddingEnd="14dp"
@@ -23,7 +22,6 @@
         android:paddingBottom="5dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
 
         <TextView
             android:id="@+id/shoppingitem_text"
@@ -33,17 +31,12 @@
             android:layout_alignParentTop="true"
             android:maxLines="1"
             android:layout_alignParentBottom="true"
-            android:textColor="@color/iconOnBackground"
-
+            android:textColor="@color/sl_item_text"
             android:autoSizeTextType="uniform"
             android:autoSizeMinTextSize="15sp"
             android:autoSizeMaxTextSize="22sp"
             android:autoSizeStepGranularity="5sp"
             />
-
-
-
-
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

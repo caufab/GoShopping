@@ -198,12 +198,7 @@ public class PlaceSearch extends AppCompatActivity {
                     builder.setTitle(R.string.add_place_dialog_title);
                     builder.setMessage(place.getPrimaryText(null)+"\n("+place.getSecondaryText(null)+")");
                     builder.setPositiveButton(R.string.add, (dialog, which) -> {
-                        MainActivity.db.insertGeofence(
-                                place.getPlaceId(),
-                                String.valueOf(place.getPrimaryText(null)),
-                                String.valueOf(place.getSecondaryText(null)),
-                                latLng.latitude, latLng.longitude);
-                        addGeofence(place.getPlaceId(), latLng);
+                        addGeofence(place, latLng);
                         count++;
                         dialog.dismiss();
                     }).setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
@@ -264,18 +259,29 @@ public class PlaceSearch extends AppCompatActivity {
     }
 
     @SuppressWarnings("MissingPermission")
-    private void addGeofence(String placeId, LatLng geofenceLatLng) {
-        Geofence geofence = buildGeofence(placeId,geofenceLatLng);
+    private void addGeofence(AutocompletePrediction place, LatLng geofenceLatLng) {
+        Geofence geofence = buildGeofence(place.getPlaceId(),geofenceLatLng);
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder()
                 .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER) // FIXME: this initial trigger must be removed
                 .addGeofence(geofence);
         GeofencingRequest geofencingRequest = builder.build();
         if(!checkPermissions())
             requestPermissions();
-        else
+        else { // user has permission -> add place to geofence client and db
+            MainActivity.db.insertGeofence(
+                    place.getPlaceId(),
+                    String.valueOf(place.getPrimaryText(null)),
+                    String.valueOf(place.getSecondaryText(null)),
+                    geofenceLatLng.latitude, geofenceLatLng.longitude);
             geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent())
-                .addOnSuccessListener(unused -> { Log.d("Geofences", "Success on adding geofences"); })
-                .addOnFailureListener(e -> { Log.e("Geofences_Error", "Failed adding geofences"); e.printStackTrace(); });
+                    .addOnSuccessListener(unused -> {
+                        Log.d("Geofences", "Success on adding geofences");
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Geofences_Error", "Failed adding geofences");
+                        e.printStackTrace();
+                    });
+        }
     }
 
     // FLAG_MUTABLE sets a warning as it requires API level 31, yet it works fine in Nexus 5 (API 27)

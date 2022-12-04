@@ -7,32 +7,32 @@
 
     <Preference
         app:isPreferenceVisible="false"
-        android:title="Abilita i permessi"
+        android:title="@string/preference_grant_permissions"
         app:iconSpaceReserved="false"
         android:key="permission_na"
-        android:summary="Alcuni permessi non sono abilitati"/>
+        android:summary="@string/preference_grant_permissions_summary"/>
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="geofencing_switch"
         app:iconSpaceReserved="false"
         android:persistent="true"
-        android:title="Abilita geofencing"
-        android:summaryOff="Geofencing è disabilitato"
-        android:summaryOn="Geofencing è attivo"/>
+        android:title="@string/preference_enable_geofencing"
+        android:summaryOff="@string/preference_enable_geofencing_summary_off"
+        android:summaryOn="@string/preference_enable_geofencing_summary_on"/>
 
 
     <Preference
         android:key="new_search"
         app:iconSpaceReserved="false"
-        android:summary="Puoi aggiungere fino a 10 negozi"
-        android:title="Scegli negozi"/>
+        android:title="@string/preference_add_place"
+        android:summary="@string/preference_add_place_summary"/>
 
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
         android:key="active_places"
-        android:title="Luoghi attivi">
+        android:title="@string/active_places">
 
     </PreferenceCategory>
 </PreferenceScreen>

@@ -18,6 +18,10 @@
 
     <color name="iconOnBackground">#FFFFFFFF</color>
 
+    <color name="sl_item_text">#FFFFFFFF</color>
+
+    <color name="sl_item_hint">#DADADA</color>
+
     <color name="overlayColor">#B52E2E2E</color>
 
     <color name="cardViewStroke">#EDEDED</color>
