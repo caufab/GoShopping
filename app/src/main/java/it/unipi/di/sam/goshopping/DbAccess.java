@@ -3,15 +3,16 @@ package it.unipi.di.sam.goshopping;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceManager;
-
 import it.unipi.di.sam.goshopping.ui.cardlist.CLFragment;
 import it.unipi.di.sam.goshopping.ui.shoppinglist.SLFragment;
 
@@ -54,7 +55,7 @@ public class DbAccess extends Activity {
                         break;
                     default:
                         break;
-                };
+                }
             });
             T.start();
         }
@@ -178,8 +179,6 @@ public class DbAccess extends Activity {
             if(cursor.getCount() == 0)
                 runOnUiThread(new MainActivity.ShareList(context, null));
             else {
-
-                strList.append(context.getString(R.string.share_shopping_list_intro_text)).append(":\n");
                 while (cursor.moveToNext())
                     strList.append(cursor.getString(cursor.getColumnIndexOrThrow("item"))).append("\n");
                 runOnUiThread(new MainActivity.ShareList(context, strList.toString()));
@@ -255,11 +254,11 @@ public class DbAccess extends Activity {
 
     }
 
-    public void getGeofences() {
+    public void getGeofences(PreferenceCategory preferenceCategory, Preference newSearch) {
         Thread T = new Thread(() -> {
             SQLiteDatabase db = mOH.getReadableDatabase();
             Cursor cursor = db.query(geofences_table_name, null, null, null, null, null, null);
-            runOnUiThread(new SettingsActivity.GeofencingFragment.ShowPlaces(cursor));
+            runOnUiThread(new SettingsActivity.GeofencingFragment.ShowPlaces(preferenceCategory, newSearch, cursor));
         });
         T.start();
     }
@@ -269,10 +268,10 @@ public class DbAccess extends Activity {
         return db.query(geofences_table_name, null, null, null, null, null, null);
     }
 
-    public void getGeofenceCount() {
+    public void getGeofenceCount(ProgressBar progressBar) {
         Thread T = new Thread(() -> {
             Cursor cursor = getGeofenceCursor();
-            runOnUiThread(new PlaceSearch.SetGeofenceCount(cursor.getCount()));
+            runOnUiThread(new PlaceSearch.SetGeofenceCount(progressBar, cursor.getCount()));
             cursor.close();
         });
         T.start();

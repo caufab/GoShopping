@@ -4,14 +4,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
-
 import it.unipi.di.sam.goshopping.AppMain;
-import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
 
 public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ShoppingListViewHolder> {
@@ -25,9 +22,9 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
         public ShoppingListViewHolder(@NonNull View itemView) {
             super(itemView);
-            cv = (CardView) itemView.findViewById(R.id.card_view);
-            tv = (TextView) itemView.findViewById(R.id.shoppingitem_text);
-            cl = (ConstraintLayout) itemView.findViewById(R.id.input_item_cl);
+            cv = itemView.findViewById(R.id.card_view);
+            tv = itemView.findViewById(R.id.shoppingitem_text);
+            cl = itemView.findViewById(R.id.input_item_cl);
         }
     }
 
@@ -63,7 +60,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         holder.cv.setOnClickListener(view -> AppMain.getDb().removeItem(holder.id, holder.getAdapterPosition()));
 
         holder.cv.setOnLongClickListener(view -> {
-            SLFragment.editItem(holder);
+            SLFragment.editItem(view.getRootView(), holder);
             return true;
         });
 

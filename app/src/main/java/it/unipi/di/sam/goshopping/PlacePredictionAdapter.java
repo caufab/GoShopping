@@ -49,7 +49,6 @@ public class PlacePredictionAdapter extends RecyclerView.Adapter<PlacePrediction
             return ">999\nkm";
     }
 
-
     interface OnPlaceClickListener {
         void onPlaceClicked(AutocompletePrediction place);
     }
@@ -80,18 +79,15 @@ public class PlacePredictionAdapter extends RecyclerView.Adapter<PlacePrediction
         });
     }
 
-
     public void setPredictions(List<AutocompletePrediction> predictions) {
         this.predictions.clear();
         this.predictions.addAll(predictions);
-        notifyDataSetChanged(); // FIXME: change to something more specific
+        notifyDataSetChanged();
     }
-
 
     // Serve per settare un listener da altre classi?
     public void setPlaceClickListener(OnPlaceClickListener onPlaceClickListener) {
         this.onPlaceClickListener = onPlaceClickListener;
     }
-
 
 }

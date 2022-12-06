@@ -24,6 +24,8 @@
 
     <color name="overlayColor">#B52E2E2E</color>
 
+    <color name="new_card_input">#727272</color>
+
     <color name="cardViewStroke">#EDEDED</color>
 
     <color name="new_item_et_bg">#727272</color>

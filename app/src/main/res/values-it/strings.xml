@@ -30,8 +30,6 @@
 
     <string name="search">Cerca</string>
     <string name="share_shopping_list_intro_text">Ecco la mia lista della spesa</string>
-    <string name="are_you_at_place">Ti trovi presso</string>
-    <string name="notification_smalltext">Ecco i primi 5 elementi della tua lista della spesa</string>
     <string name="share_empty_list_info">Non ci sono elementi da condividere</string>
     <string name="edit_card_color_load_error">Impossibile caricare il colore. Riseleziona il colore della carta</string>
     <string name="remove_card_confirm_message">Sei sicuro di voler eliminare la carta</string>
@@ -56,6 +54,9 @@
     <!-- Notifications -->
     <string name="notification_channel_description">Abilita questo canale per ricevere una notifica con i primi articoli della tua lista quando vai a fare la spesa nei tuoi negozi preferiti</string>
     <string name="notification_channel_name">Notifiche In Negozio</string>
+    <string name="notification_title" >La tua lista della spesa</string>
+    <string name="notification_sub_title">Ecco i primi articoli della tua lista</string>
+    <!-- Preference -->
     <string name="preference_about">Informazioni</string>
     <string name="preference_appearance">Aspetto</string>
     <string name="preference_shopping_items_span">Numero di articoli della spesa per riga</string>

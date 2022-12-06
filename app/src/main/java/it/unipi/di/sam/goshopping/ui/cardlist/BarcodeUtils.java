@@ -15,8 +15,8 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 public class BarcodeUtils extends Activity {
 
     public static class postImage implements Runnable {
-        private Bitmap bitmap;
-        private ImageView imageView;
+        private final Bitmap bitmap;
+        private final ImageView imageView;
         public postImage(ImageView imageView, Bitmap bitmap) {
             this.bitmap = bitmap;
             this.imageView = imageView;

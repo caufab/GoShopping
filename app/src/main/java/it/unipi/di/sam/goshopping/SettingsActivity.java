@@ -4,15 +4,14 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,11 +23,9 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +56,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save current activity title so we can set it again after a configuration change
         outState.putCharSequence(getString(R.string.settings), getTitle());
@@ -73,7 +70,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
 
 
     @Override
-    public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
+    public boolean onPreferenceStartFragment(@NonNull PreferenceFragmentCompat caller, Preference pref) {
         // Instantiate the new Fragment
         final Bundle args = pref.getExtras();
         final Fragment fragment = getSupportFragmentManager().getFragmentFactory().instantiate(
@@ -96,6 +93,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
             setPreferencesFromResource(R.xml.header_preferences, rootKey);
 
             ListPreference themePref = findPreference("theme_preference");
+            if(themePref == null) return;
             themePref.setOnPreferenceChangeListener((preference, newValue) -> {
                 switch (newValue.toString()) {
                     case "light":
@@ -131,60 +129,68 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
 
         private static GeofencingClient mGeofencingClient;
         private Preference geofencingSwitch;
-        private static Preference newSearch;
         private Preference permissionNA;
         private SharedPreferences sharedPreferences;
 
-        static PreferenceCategory activePlaces;
+        PreferenceCategory activePlaces;
         static Cursor cursor;
         static int count;
 
+        @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.geofencing_preferences, rootKey);
 
             if(mGeofencingClient == null)
-                mGeofencingClient = LocationServices.getGeofencingClient(getContext());
+                mGeofencingClient = LocationServices.getGeofencingClient(requireContext());
 
-            newSearch = findPreference("new_search");
-            newSearch.setOnPreferenceClickListener(preference -> {
-                startActivity(new Intent(getContext(), PlaceSearch.class));
-                return false;
-            });
+            Preference newSearch = findPreference("new_search");
+            if(newSearch!=null) {
+                newSearch.setOnPreferenceClickListener(preference -> {
+                    startActivity(new Intent(getContext(), PlaceSearch.class));
+                    return false;
+                });
+            }
 
             geofencingSwitch = findPreference("geofencing_switch");
             permissionNA = findPreference("permission_na");
-            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
             permissionNA.setOnPreferenceClickListener(preference -> {
-                if(!checkFinePosPermission() || !checkBgPosPermission()) {
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
-                } else if(!checkNotifPermission())
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_PERMISSIONS_REQUEST_CODE);
+                if(!hasFinePosPermission() || !hasBgPosPermission()) {
+                    ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+                } else if(!hasNotifPermission())
+                    ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_PERMISSIONS_REQUEST_CODE);
                 return false;
             });
 
-            activePlaces = (PreferenceCategory) findPreference("active_places");
+            activePlaces = findPreference("active_places");
 
         }
 
-        private boolean checkBgPosPermission() {
+        private boolean hasBgPosPermission() {
             if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q)
-                return ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
+                return ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
             else return true;
         }
-        private boolean checkFinePosPermission() {
-            return ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        private boolean hasFinePosPermission() {
+            return ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
         }
-        private boolean checkNotifPermission() {
+        private boolean hasNotifPermission() {
             if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.TIRAMISU)
-                return ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+                return ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
             else return true;
         }
 
 
         public static class ShowPlaces implements Runnable{
-            public ShowPlaces(Cursor placesCursor) { cursor = placesCursor; }
+            private final Preference newSearch;
+            private final PreferenceCategory activePlaces;
+            public ShowPlaces(PreferenceCategory preferenceCategory, Preference newSearch, Cursor placesCursor) {
+                this.activePlaces = preferenceCategory;
+                this.newSearch = newSearch;
+                cursor = placesCursor;
+            }
             @Override
             public void run() {
                 activePlaces.removeAll();
@@ -226,9 +232,9 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
         public void onResume() {
             super.onResume();
 
-            AppMain.getDb().getGeofences();
+            AppMain.getDb().getGeofences(findPreference("active_places"), findPreference("new_search"));
 
-            if(!checkFinePosPermission() || !checkBgPosPermission() || !checkNotifPermission()) {
+            if(!hasFinePosPermission() || !hasBgPosPermission() || !hasNotifPermission()) {
                 sharedPreferences.edit().putBoolean("geofencing_switch", false).apply();
                 geofencingSwitch.setDefaultValue(false);
                 geofencingSwitch.setEnabled(false);
@@ -237,20 +243,15 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                 permissionNA.setVisible(false);
                 geofencingSwitch.setEnabled(true);
             }
-
         }
-
 
         private static void removeGeofenceId(String geofenceId) {
             List<String> geofenceIdList = new ArrayList<>();
             geofenceIdList.add(geofenceId);
             mGeofencingClient.removeGeofences(geofenceIdList)
-                    .addOnSuccessListener(unused -> { Log.d("Geofencing", "Success on removing geofence"); })
-                    .addOnFailureListener(e -> { Log.d("Geofencing_Error", "Failed to removing geofence"); e.printStackTrace(); } );
+                    .addOnSuccessListener(unused -> Log.d("Geofencing", "Success on removing geofence"))
+                    .addOnFailureListener(e -> Log.d("Geofencing_Error", "Failed to removing geofence: "+e.getMessage()));
         }
-
-
-
     }
 
 
@@ -275,12 +276,9 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                         intent.setData(uri);
                         startActivity(intent);
                         dialog.dismiss();
-                    }).setNegativeButton(R.string.cancel, (dialog, which) -> {
-                        dialog.dismiss();
-                    }).show();
+                    }).setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
 
                 } else if(grantResults[0] == PackageManager.PERMISSION_GRANTED && permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                //        !(permissions[0].equals(Manifest.permission.ACCESS_BACKGROUND_LOCATION) || permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS))) {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setTitle(R.string.request_permission_title);
@@ -288,9 +286,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                         builder.setPositiveButton("Ok", (dialog, which) -> {
                             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
                             dialog.dismiss();
-                        }).setNegativeButton(R.string.cancel, (dialog, which) -> {
-                            dialog.dismiss();
-                        }).show();
+                        }).setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
                     }
                 }
             }

@@ -9,20 +9,16 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import it.unipi.di.sam.goshopping.AppMain;
 import it.unipi.di.sam.goshopping.R;
 
 public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
 
     public static class CLViewHolder extends RecyclerView.ViewHolder {
-
         TextView tv;
         CardView cv;
         String code;
@@ -33,8 +29,8 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
 
         public CLViewHolder(@NonNull View itemView) {
             super(itemView);
-            cv = (CardView) itemView.findViewById(R.id.card_cv);
-            tv = (TextView) itemView.findViewById(R.id.card_name);
+            cv = itemView.findViewById(R.id.card_cv);
+            tv = itemView.findViewById(R.id.card_name);
         }
     }
 
@@ -65,9 +61,7 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
         holder.tv.setText(holder.name);
         holder.tv.setTextColor(getTextColorByBackground(holder.bgColor));
         holder.cv.setCardBackgroundColor(holder.bgColor);
-        holder.cv.setOnClickListener(view -> {
-            showCard(holder);
-        });
+        holder.cv.setOnClickListener(view -> showCard(view.getRootView(), holder));
 
     }
 
@@ -79,13 +73,13 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
             return Color.parseColor("#121212");
     }
 
-    public static void showCard(CLAdapter.CLViewHolder holder) {
-        View overlay = CLFragment.root.findViewById(R.id.show_card_overlay);
-        CardView popupCL = CLFragment.root.findViewById(R.id.show_card_cl);
-        TextView cardName = CLFragment.root.findViewById(R.id.show_card_name);
-        ImageView barcodeImageView = CLFragment.root.findViewById(R.id.barcode_image);
-        TextView code = CLFragment.root.findViewById(R.id.barcode_text);
-        FloatingActionButton fabEdit = CLFragment.root.findViewById(R.id.edit_card_fab);
+    public static void showCard(View rootView, CLAdapter.CLViewHolder holder) {
+        View overlay = rootView.findViewById(R.id.show_card_overlay);
+        CardView popupCL = rootView.findViewById(R.id.show_card_cl);
+        TextView cardName = rootView.findViewById(R.id.show_card_name);
+        ImageView barcodeImageView = rootView.findViewById(R.id.barcode_image);
+        TextView code = rootView.findViewById(R.id.barcode_text);
+        FloatingActionButton fabEdit = rootView.findViewById(R.id.edit_card_fab);
 
         cardName.setText(holder.name);
         code.setText(holder.code);

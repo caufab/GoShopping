@@ -1,6 +1,5 @@
 package it.unipi.di.sam.goshopping.ui.shoppinglist;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -11,34 +10,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import it.unipi.di.sam.goshopping.AppMain;
-import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
 
 public class SLFragment extends Fragment {
 
-
-
-    public static ShoppingListAdapter slA;
+    public static ShoppingListAdapter slAdapter;
     public static RecyclerView rv;
-    private static View root;
 
     public static Cursor cursor;
     ContentValues newVal = new ContentValues();
 
-
-
     public void onCreate(Bundle savedInstanceStace) {
         super.onCreate(savedInstanceStace);
-        slA = new ShoppingListAdapter();
-
+        slAdapter = new ShoppingListAdapter();
     }
 
     public static class UpdateCursor implements Runnable {
@@ -58,19 +48,19 @@ public class SLFragment extends Fragment {
         public void run() {
             switch(request) {
                 case "set_adapter":
-                    rv.setAdapter(slA);
+                    rv.setAdapter(slAdapter);
                     break;
                 case "insert":
                     pos=cursor.getCount()-1;
-                    slA.notifyItemInserted(pos);
+                    slAdapter.notifyItemInserted(pos);
                     rv.scrollToPosition(pos);
                     break;
                 case "update":
-                    slA.notifyItemChanged(pos);
+                    slAdapter.notifyItemChanged(pos);
                     rv.scrollToPosition(pos);
                     break;
                 case "remove":
-                    slA.notifyItemRemoved(pos);
+                    slAdapter.notifyItemRemoved(pos);
                     break;
                 default:
                     break;
@@ -78,25 +68,23 @@ public class SLFragment extends Fragment {
         }
     }
 
-
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        root = inflater.inflate(R.layout.fragment_shoppinglist, container, false);
+        View root = inflater.inflate(R.layout.fragment_shoppinglist, container, false);
 
-        rv = (RecyclerView) root.findViewById(R.id.shoppinglist_rv);
+        rv = root.findViewById(R.id.shoppinglist_rv);
         rv.setHasFixedSize(true);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(root.getContext());
         int spanCount = Integer.parseInt(sharedPreferences.getString("shopping_list_span_count", "1"));
-        GridLayoutManager llm = new GridLayoutManager(getContext(), spanCount);
+        GridLayoutManager llm = new GridLayoutManager(root.getContext(), spanCount);
 
         rv.setLayoutManager(llm);
 
         AppMain.getDb().slQuery();
 
-        EditText et = (EditText) root.findViewById(R.id.new_item_input);
-        Button addItemBtn = (Button) root.findViewById(R.id.input_item_btn_add);
+        EditText et = root.findViewById(R.id.new_item_input);
+        Button addItemBtn = root.findViewById(R.id.input_item_btn_add);
         addItemBtn.setOnClickListener(view -> {
             Editable ed = et.getText();
             if(ed != null) {
@@ -114,16 +102,15 @@ public class SLFragment extends Fragment {
                 }
             }
         });
-
         return root;
     }
 
-    public static void editItem(ShoppingListAdapter.ShoppingListViewHolder holder) {
-        View ol = (View) root.findViewById(R.id.edit_overlay);
-        Button undo = (Button) root.findViewById(R.id.input_item_btn_undo);
-        Button done = (Button) root.findViewById(R.id.input_item_btn_done);
-        Button add = (Button) root.findViewById(R.id.input_item_btn_add);
-        EditText et = (EditText) root.findViewById(R.id.new_item_input);
+    public static void editItem(View rootView, ShoppingListAdapter.ShoppingListViewHolder holder) {
+        View ol = rootView.findViewById(R.id.edit_overlay);
+        Button undo = rootView.findViewById(R.id.input_item_btn_undo);
+        Button done = rootView.findViewById(R.id.input_item_btn_done);
+        Button add = rootView.findViewById(R.id.input_item_btn_add);
+        EditText et = rootView.findViewById(R.id.new_item_input);
 
         ol.setVisibility(View.VISIBLE);
         add.setVisibility(View.GONE);
@@ -132,7 +119,6 @@ public class SLFragment extends Fragment {
         et.requestFocus();
         undo.setVisibility(View.VISIBLE);
         done.setVisibility(View.VISIBLE);
-
 
         undo.setOnClickListener(view -> {
             undo.setVisibility(View.GONE);
@@ -161,9 +147,6 @@ public class SLFragment extends Fragment {
             ol.setVisibility(View.GONE);
             add.setVisibility(View.VISIBLE);
         });
-
-
-
     }
 
     // get holder position in RV, except if it's equal to exceptPos (use -1 for new items)
@@ -176,8 +159,6 @@ public class SLFragment extends Fragment {
             } while(cursor.moveToNext());
         return -1;
     }
-
-
 
 
     @Override

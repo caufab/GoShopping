@@ -2,7 +2,6 @@ package it.unipi.di.sam.goshopping;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
 public class AppMain extends Application {
 
@@ -25,7 +24,4 @@ public class AppMain extends Application {
             initDb();
         return database;
     }
-
-    // TODO: write new public static method to get application context
-
 }

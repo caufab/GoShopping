@@ -31,8 +31,6 @@
 
     <string name="search">Search</string>
     <string name="share_shopping_list_intro_text">This is my shopping list</string>
-    <string name="are_you_at_place">Are you at</string>
-    <string name="notification_smalltext">The first 5 elements from your shopping list</string>
     <string name="share_empty_list_info">Your shopping list is empty</string>
     <string name="edit_card_color_load_error">An error occurred loading color. Please, select color manually</string>
     <string name="remove_card_confirm_message">Are you sure you want to remove the card</string>
@@ -59,6 +57,9 @@
     <string name="notification_channel_name">In-Store Notification</string>
     <string name="notification_channel_description">Enable this channel to receive notification with top items of your list when you are shopping in your favourite stores</string>
     <string name="notification_channel_id" translatable="false">GoShoppingMainId</string>
+    <string name="notification_title" >Your shopping list</string>
+    <string name="notification_sub_title">Top items from your list</string>
+    <!-- Preference -->
     <string name="theme_entry_light">Light</string>
     <string name="theme_entry_dark">Dark</string>
     <string name="theme_entry_systems">System\'s theme</string>

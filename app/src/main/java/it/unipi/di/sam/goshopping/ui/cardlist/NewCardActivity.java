@@ -3,7 +3,6 @@ package it.unipi.di.sam.goshopping.ui.cardlist;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,19 +10,15 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-
 import it.unipi.di.sam.goshopping.AppMain;
-import it.unipi.di.sam.goshopping.MainActivity;
 import it.unipi.di.sam.goshopping.R;
 
 public class NewCardActivity extends AppCompatActivity {
@@ -34,9 +29,6 @@ public class NewCardActivity extends AppCompatActivity {
     private TextView barcodeTV;
     private TextView cardName;
     private Button addCardBtn;
-    private Button cancelBtn;
-    private ImageButton btn_scan;
-    private Button remCardBtn;
     private RadioGroup radioGroup;
     private RadioButton radioButton;
     private int color;
@@ -44,18 +36,17 @@ public class NewCardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
         setContentView(R.layout.activity_new_card);
 
         addCardBtn = findViewById(R.id.add_card_btn);
-        cancelBtn = findViewById(R.id.cancel_card_button);
+        Button cancelBtn = findViewById(R.id.cancel_card_button);
         barcodeET = findViewById(R.id.new_card_edittext);
         imageView = findViewById(R.id.barcode_preview_image);
         barcodeTV = findViewById(R.id.barcode_text);
-        btn_scan = findViewById(R.id.scan_btn);
+        Button btn_scan = findViewById(R.id.scan_btn);
         cardName = findViewById(R.id.card_name);
-        remCardBtn = findViewById(R.id.rem_card_btn);
-        radioGroup = (RadioGroup) findViewById(R.id.color_radio_group);
+        Button remCardBtn = findViewById(R.id.rem_card_btn);
+        radioGroup = findViewById(R.id.color_radio_group);
 
 
         Bundle b = getIntent().getExtras();
@@ -67,7 +58,7 @@ public class NewCardActivity extends AppCompatActivity {
             color = b.getInt("color");
 
             String hexColor = String.format("#%06X",(0xFFFFFF & color));
-            radioButton = (RadioButton) radioGroup.findViewWithTag(hexColor);
+            radioButton = radioGroup.findViewWithTag(hexColor);
             if(radioButton != null) radioButton.setChecked(true);
             else Toast.makeText(this, R.string.edit_card_color_load_error, Toast.LENGTH_LONG).show();
 
@@ -125,7 +116,7 @@ public class NewCardActivity extends AppCompatActivity {
         cancelBtn.setOnClickListener(view -> finish());
         // add new card to database
         addCardBtn.setOnClickListener(view -> {
-            radioButton = (RadioButton) findViewById(radioGroup.getCheckedRadioButtonId());
+            radioButton = findViewById(radioGroup.getCheckedRadioButtonId());
             color = radioButton.getButtonTintList().getDefaultColor(); // update color only if color radio button was found
 
             if (b == null) // add mode

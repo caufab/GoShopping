@@ -51,9 +51,8 @@ public class PlaceSearch extends AppCompatActivity {
     private Location currentLocation = null;
     private LocationManager locationManager;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-    private static final String TAG = PlaceSearch.class.getSimpleName();
-    private Handler handler = new Handler();
-    private PlacePredictionAdapter adapter = new PlacePredictionAdapter();
+    private final Handler handler = new Handler();
+    private final PlacePredictionAdapter adapter = new PlacePredictionAdapter();
 
 
     private PlacesClient placesClient;
@@ -69,7 +68,7 @@ public class PlaceSearch extends AppCompatActivity {
 
 
     private ViewAnimator viewAnimator;
-    private static ProgressBar progressBar;
+    private ProgressBar progressBar;
     static MenuItem SearchMenuItem;
 
 
@@ -94,6 +93,8 @@ public class PlaceSearch extends AppCompatActivity {
             geofencingClient = LocationServices.getGeofencingClient(this);
 
         progressBar = findViewById(R.id.progress_bar);
+
+
         viewAnimator = findViewById(R.id.view_animator);
         placesClient = Places.createClient(this);
         progressBar.setIndeterminate(true);
@@ -102,10 +103,14 @@ public class PlaceSearch extends AppCompatActivity {
 
     // Updates geofence count to limit it's increment and stops progressbar
     public static class SetGeofenceCount implements Runnable {
-        public SetGeofenceCount(int geofenceCount) { count = geofenceCount; }
+        ProgressBar progressBar;
+        public SetGeofenceCount(ProgressBar progressBar, int geofenceCount) {
+            this.progressBar = progressBar;
+            count = geofenceCount;
+        }
         @Override
         public void run() {
-            progressBar.setIndeterminate(false);
+            this.progressBar.setIndeterminate(false);
             SearchMenuItem.setEnabled(true);
         }
     }
@@ -123,7 +128,7 @@ public class PlaceSearch extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.place_search_menu, menu);
         SearchMenuItem = menu.findItem(R.id.search);
         SearchMenuItem.setEnabled(false);
-        AppMain.getDb().getGeofenceCount();
+        AppMain.getDb().getGeofenceCount(progressBar);
         SearchView searchView = (SearchView) SearchMenuItem.getActionView();
         initSearchView(searchView);
         return super.onCreateOptionsMenu(menu);
@@ -166,9 +171,7 @@ public class PlaceSearch extends AppCompatActivity {
                 handler.removeCallbacksAndMessages(null);
 
                 // Start a new place prediction request in 300ms
-                handler.postDelayed( () -> {
-                    getPlacePredictions(newText);
-                    }, 300);
+                handler.postDelayed( () -> getPlacePredictions(newText), 300);
                 return false;
             }
         });
@@ -227,7 +230,7 @@ public class PlaceSearch extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                 locationProvider = LocationManager.FUSED_PROVIDER;
             currentLocation = locationManager.getLastKnownLocation(locationProvider);
-            locationManager.requestLocationUpdates(locationProvider, 0, 0, location -> { currentLocation = location; });
+            locationManager.requestLocationUpdates(locationProvider, 0, 0, location -> currentLocation = location);
         }
 
         LatLng origin;
@@ -269,22 +272,17 @@ public class PlaceSearch extends AppCompatActivity {
             requestPermissions();
         else { // user has permission -> add place to geofence client and db
             AppMain.getDb().insertGeofence(
-                    place.getPlaceId(),
-                    String.valueOf(place.getPrimaryText(null)),
-                    String.valueOf(place.getSecondaryText(null)),
-                    geofenceLatLng.latitude, geofenceLatLng.longitude);
+                place.getPlaceId(),
+                String.valueOf(place.getPrimaryText(null)),
+                String.valueOf(place.getSecondaryText(null)),
+                geofenceLatLng.latitude, geofenceLatLng.longitude);
             geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent())
-                    .addOnSuccessListener(unused -> {
-                        Log.d("Geofences", "Success on adding geofences");
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("Geofences_Error", "Failed adding geofences");
-                        e.printStackTrace();
-                    });
+                .addOnSuccessListener(unused -> Log.d("Geofences", "Success on adding geofences"))
+                .addOnFailureListener(e -> Log.e("Geofences_Error", "Failed adding geofences: "+e.getMessage()));
         }
     }
 
-    // FLAG_MUTABLE sets a warning as it requires API level 31, yet it works fine in Nexus 5 (API 27)
+    // FLAG_MUTABLE sets a warning as it requires API level 31, yet it works fine in API 27 (Nexus 5)
     private PendingIntent getGeofencePendingIntent() {
         // Reuse the PendingIntent if we already have it
         if (geofencePendingIntent != null) return geofencePendingIntent;
@@ -315,11 +313,10 @@ public class PlaceSearch extends AppCompatActivity {
     // ask for permission only if user denied it before but did not check "Don't ask again" checkbox
     private void requestPermissions() {
         Snackbar.make(this, findViewById(android.R.id.content), getString(R.string.place_search_permission_request), Snackbar.LENGTH_INDEFINITE)
-            .setAction(getString(R.string.allow), view -> {
+            .setAction(getString(R.string.allow), view ->
                 ActivityCompat.requestPermissions(PlaceSearch.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_PERMISSIONS_REQUEST_CODE);
-            }).show();
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_PERMISSIONS_REQUEST_CODE)).show();
     }
 
     // After getting FINE_LOCATION permission sends users to settings to grant BACKGROUND_LOCATION permission

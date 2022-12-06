@@ -19,8 +19,6 @@ import java.util.List;
 
 public class GeofenceBR extends BroadcastReceiver {
 
-    private static DbAccess db;
-    private static Cursor cursor;
     private boolean found = false;
 
     @Override
@@ -37,8 +35,8 @@ public class GeofenceBR extends BroadcastReceiver {
             return;
         }
 
-        db = new DbAccess(context);
-        cursor = db.getGeofenceCursor();
+        DbAccess db = new DbAccess(context);
+        Cursor cursor = db.getGeofenceCursor();
 
 
         // Get the transition type
@@ -48,6 +46,7 @@ public class GeofenceBR extends BroadcastReceiver {
         if(gTransition == Geofence.GEOFENCE_TRANSITION_EXIT ||
             gTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
             List<Geofence> triggeringGeofences = gEvent.getTriggeringGeofences();
+            if(triggeringGeofences == null) return;
             for(Geofence geofence : triggeringGeofences) {
                 cursor.moveToFirst();
                 do {
@@ -56,24 +55,25 @@ public class GeofenceBR extends BroadcastReceiver {
                         if(gTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
                             Cursor shoppingListCursor = db.getTopItems(Constants.NOTIFICATION_MAX_ITEMS);
                             if(shoppingListCursor.getCount() != 0) {
-                                String bigText = "";
+                                StringBuilder itemListStr = new StringBuilder();
                                 int i = 1;
                                 while(shoppingListCursor.moveToNext() && i<=5) {
-                                    bigText += shoppingListCursor.getString(shoppingListCursor.getColumnIndexOrThrow("item")) + "\n";
+                                    itemListStr.append(shoppingListCursor.getString(shoppingListCursor.getColumnIndexOrThrow("item"))).append("\n");
                                     i++;
                                 }
-                                bigText += "...";
-                                Intent notifIntent = new Intent(context, MainActivity.class);
+                                itemListStr.append("...");
+                                Intent notificationIntent = new Intent(context, MainActivity.class);
                                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-                                stackBuilder.addNextIntentWithParentStack(notifIntent);
+                                stackBuilder.addNextIntentWithParentStack(notificationIntent);
                                 PendingIntent pendingIntent = stackBuilder.getPendingIntent(0,
                                         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                                 Utils.sendNotification(context,
-                                        cursor.getInt(cursor.getColumnIndexOrThrow("_ID")),
-                                        context.getString(R.string.are_you_at_place) + " " + cursor.getString(cursor.getColumnIndexOrThrow("name")) + " ?",
-                                        context.getString(R.string.notification_smalltext) + ":",
-                                        bigText,
-                                        pendingIntent);
+                                    cursor.getInt(cursor.getColumnIndexOrThrow("_ID")),
+                                    context.getString(R.string.notification_title),
+                                    context.getString(R.string.notification_sub_title),
+                                    cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                                    itemListStr.toString(),
+                                    pendingIntent);
                             }
                         }
                         else Utils.cancelNotification(context, cursor.getInt(cursor.getColumnIndexOrThrow("_ID")));

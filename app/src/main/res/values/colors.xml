@@ -23,6 +23,7 @@
 
     <color name="overlayColor">#B5000000</color>
 
+    <color name="new_card_input">#C5C6C5</color>
 
     <color name="cardViewStroke">#00000000</color>
 

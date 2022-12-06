@@ -3,17 +3,10 @@ package it.unipi.di.sam.goshopping;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.navigation.NavController;
@@ -21,7 +14,6 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
-
 import it.unipi.di.sam.goshopping.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,9 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
         Utils.createNotificationChannel(this);
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_shoppinglist, R.id.navigation_cardlist).build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
@@ -91,17 +80,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            if(mContext != null) {
                 if(str == null)
                     Toast.makeText(mContext, R.string.share_empty_list_info, Toast.LENGTH_LONG).show();
                 else {
+                    str = mContext.getString(R.string.share_shopping_list_intro_text)+":\n"+str;
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
                     sendIntent.putExtra(Intent.EXTRA_TEXT, str);
                     sendIntent.setType("text/plain");
                     Intent shareIntent = Intent.createChooser(sendIntent, null);
                     mContext.startActivity(shareIntent);
-                }
             }
         }
     }

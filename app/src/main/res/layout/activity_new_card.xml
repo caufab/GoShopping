@@ -81,6 +81,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginTop="2dp"
         android:background="@drawable/rounded_textinput_bg"
+        android:backgroundTint="@color/new_card_input"
         app:layout_constraintTop_toBottomOf="@+id/new_card_code" >
 
 
@@ -91,6 +92,7 @@
             android:layout_height="50dp"
             android:layout_marginEnd="55dp"
             android:background="#00FFFFFF"
+            android:textColor="@color/sl_item_text"
             android:inputType="number"
             android:maxLength="48"
             android:maxLines="1"
@@ -99,7 +101,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/scan_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -107,8 +109,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="15dp"
-            app:borderWidth="10dp"
-            android:backgroundTint="@color/red_primary"
+            android:elevation="6dp"
             android:background="@drawable/ic_baseline_photo_camera_24"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
             android:clickable="true"
@@ -138,6 +139,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:background="@drawable/rounded_textinput_bg"
+        android:backgroundTint="@color/new_card_input"
         app:layout_constraintTop_toBottomOf="@+id/card_name_hint" />
 
     <TextView
@@ -153,12 +155,13 @@
         <RadioGroup
             android:id="@+id/color_radio_group"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="2dp"
             android:padding="5dp"
             android:background="@drawable/rounded_textinput_bg"
-            android:backgroundTint="#B0BBBD"
+            android:backgroundTint="@color/new_card_input"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatRadioButton
@@ -180,13 +183,13 @@
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/color_green"
                 style="@style/CardColorRadioButton"
-                android:tag="#388E3C"
-                android:buttonTint="#388E3C"/>
+                android:tag="#34B23A"
+                android:buttonTint="#34B23A"/>
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/color_blue"
                 style="@style/CardColorRadioButton"
-                android:tag="#4A899D"
-                android:buttonTint="#4A899D"/>
+                android:tag="#3E92BF"
+                android:buttonTint="#3E92BF"/>
             <androidx.appcompat.widget.AppCompatRadioButton
                 android:id="@+id/color_black"
                 style="@style/CardColorRadioButton"
@@ -238,7 +241,7 @@
     <Button
         android:id="@+id/rem_card_btn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:visibility="gone"
         android:layout_marginTop="20dp"
         android:layout_weight="1"
