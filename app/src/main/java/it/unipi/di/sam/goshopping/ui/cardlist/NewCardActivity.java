@@ -1,6 +1,7 @@
 package it.unipi.di.sam.goshopping.ui.cardlist;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ public class NewCardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_card);
+        ActionBar actionBar = getSupportActionBar();
 
         addCardBtn = findViewById(R.id.add_card_btn);
         Button cancelBtn = findViewById(R.id.cancel_card_button);
@@ -51,6 +53,7 @@ public class NewCardActivity extends AppCompatActivity {
 
         Bundle b = getIntent().getExtras();
         if(b != null) { // edit card use case
+            if(actionBar != null) actionBar.setTitle(R.string.edit_card_activity_label);
             barcodeET.setText(b.getString("code"));
             cardName.setText(b.getString("name"));
             barcodeTV.setText(b.getString("code"));
@@ -72,8 +75,8 @@ public class NewCardActivity extends AppCompatActivity {
                 builder.setMessage(getString(R.string.remove_card_confirm_message)+" "+b.getString("name"));
                 builder.setPositiveButton(R.string.confirm, (dialogInterface, i) -> {
                     AppMain.getDb().removeCard(b.getInt("id"), b.getInt("rv_pos"));
-                    dialogInterface.dismiss();
                     finish();
+                    dialogInterface.dismiss();
                 }).setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss()).show();
 
             });
@@ -91,6 +94,7 @@ public class NewCardActivity extends AppCompatActivity {
                 });
         }
         else { // new card use case
+            if(actionBar != null) actionBar.setTitle(R.string.new_card_activity_label);
             addCardBtn.setText(R.string.add);
             remCardBtn.setVisibility(View.GONE);
         }

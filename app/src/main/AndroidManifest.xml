@@ -32,7 +32,7 @@
         </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${API_KEY}" /> <!-- TODO: place api key -->
+            android:value="${API_KEY}" />
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"
@@ -71,8 +71,7 @@
 
         <receiver
             android:name=".GeofenceBR"
-            android:enabled="true"
-            android:exported="true" />
+            android:enabled="true" />
     </application>
 
 </manifest>

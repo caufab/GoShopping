@@ -5,6 +5,7 @@
     <string name="title_activity_settings">Settings</string>
     <string name="place_search_activity_label">Stores Search</string>
     <string name="new_card_activity_label">New Loyalty Card</string>
+    <string name="edit_card_activity_label">Edit Loyalty Card</string>
 
 
     <string name="settings">Settings</string>
@@ -79,5 +80,6 @@
     <string name="preference_grant_permissions_summary">Some permissions have not been granted yet</string>
     <string name="preference_geofencing_summary">This feature allows you to receive a notification containng the top items of your shopping list whenever you go shopping in your trusted store</string>
     <string name="preference_geofencing_header">In-Store Notification</string>
+    <string name="preference_geofencing_note">NOTE: due to power saving policies, some devices might limit this feature, and because of that notification might not be prompt</string>
     <!--  -->
 </resources>

@@ -89,7 +89,6 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
         overlay.setVisibility(View.VISIBLE);
         popupCL.setVisibility(View.VISIBLE);
 
-
         // If barcode ImageView has been created generate immediately the barcode, otherwise wait until it is created
         if(barcodeImageView.isLaidOut())
             CLFragment.bcUtils.generateBarcodeImage(barcodeImageView, holder.barcodeFormat,  holder.code);
@@ -101,7 +100,6 @@ public class CLAdapter extends RecyclerView.Adapter<CLAdapter.CLViewHolder> {
                     CLFragment.bcUtils.generateBarcodeImage(barcodeImageView, holder.barcodeFormat,  holder.code);
                 }
             });
-
 
         CLFragment.fabAdd.setVisibility(View.GONE);
         fabEdit.setVisibility(View.VISIBLE);

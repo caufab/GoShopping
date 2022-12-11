@@ -54,7 +54,6 @@ public class PlaceSearch extends AppCompatActivity {
     private final Handler handler = new Handler();
     private final PlacePredictionAdapter adapter = new PlacePredictionAdapter();
 
-
     private PlacesClient placesClient;
     private AutocompleteSessionToken sessionToken;
     private GeofencingClient geofencingClient;
@@ -65,12 +64,9 @@ public class PlaceSearch extends AppCompatActivity {
     FetchPlaceRequest fetchPlaceRequest;
     Task<FetchPlaceResponse> responseTask;
 
-
-
     private ViewAnimator viewAnimator;
     private ProgressBar progressBar;
     static MenuItem SearchMenuItem;
-
 
     final String apiKey = BuildConfig.API_KEY;
     static int count;
@@ -143,13 +139,11 @@ public class PlaceSearch extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
-
 
     private void initSearchView(SearchView searchView) {
         searchView.setQueryHint(getString(R.string.search_place_hint));
@@ -219,9 +213,8 @@ public class PlaceSearch extends AppCompatActivity {
         });
     }
 
-    @SuppressWarnings("MissingPermission") // FIXME: remove when i place if(fine location is granted)
+    @SuppressWarnings("MissingPermission")
     private void getPlacePredictions(String query) {
-
         // At this point if users has already granted location permission he will see the distance from
         // each places, otherwise he will see only places name and address
         if(checkPermissions()) {
@@ -242,7 +235,7 @@ public class PlaceSearch extends AppCompatActivity {
             .builder()
             .setSessionToken(sessionToken)
             .setQuery(query)
-            .setCountries("IT")  // check Locale?
+            .setCountries("IT")
             .setOrigin(origin)
             .build();
 
@@ -265,7 +258,7 @@ public class PlaceSearch extends AppCompatActivity {
     private void addGeofence(AutocompletePrediction place, LatLng geofenceLatLng) {
         Geofence geofence = buildGeofence(place.getPlaceId(),geofenceLatLng);
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder()
-                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER) // FIXME: this initial trigger must be removed
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL)
                 .addGeofence(geofence);
         GeofencingRequest geofencingRequest = builder.build();
         if(!checkPermissions())
@@ -275,7 +268,7 @@ public class PlaceSearch extends AppCompatActivity {
                 place.getPlaceId(),
                 String.valueOf(place.getPrimaryText(null)),
                 String.valueOf(place.getSecondaryText(null)),
-                geofenceLatLng.latitude, geofenceLatLng.longitude);
+                geofenceLatLng.latitude, geofenceLatLng.longitude, Geofence.NEVER_EXPIRE);
             geofencingClient.addGeofences(geofencingRequest, getGeofencePendingIntent())
                 .addOnSuccessListener(unused -> Log.d("Geofences", "Success on adding geofences"))
                 .addOnFailureListener(e -> Log.e("Geofences_Error", "Failed adding geofences: "+e.getMessage()));

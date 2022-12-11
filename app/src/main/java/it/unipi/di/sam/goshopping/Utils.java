@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat;
 public class Utils {
 
     public static void createNotificationChannel(Context context) {
-        CharSequence name = context.getString(R.string.notification_channel_name); // TODO: put in string.xml
+        CharSequence name = context.getString(R.string.notification_channel_name);
         String description = context.getString(R.string.notification_channel_description);
         int importance = NotificationManager.IMPORTANCE_DEFAULT;
         NotificationChannel channel = new NotificationChannel(context.getString(R.string.notification_channel_id), name, importance);
@@ -21,10 +21,6 @@ public class Utils {
         notificationManager.createNotificationChannel(channel);
     }
 
-    /**
-     * Sends a new notification to the Notification Manager with a title, text, and the
-     * pending intent to launch when users click on it
-     */
     @SuppressWarnings("MissingPermission")
     public static void sendNotification(Context context, int notificationId, String title, String subTitle, String upperTitle, String expandedText, PendingIntent pendingIntent) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))

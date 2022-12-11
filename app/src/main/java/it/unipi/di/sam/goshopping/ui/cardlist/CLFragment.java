@@ -24,7 +24,6 @@ public class CLFragment extends Fragment {
     public static CLAdapter clAdapter;
     public static FloatingActionButton fabAdd;
     public static BarcodeUtils bcUtils;
-
     public static Cursor cursor;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -94,8 +93,9 @@ public class CLFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
+        cursor.close();
     }
 
 }

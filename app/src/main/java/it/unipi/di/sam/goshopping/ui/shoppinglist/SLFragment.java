@@ -24,7 +24,6 @@ public class SLFragment extends Fragment {
     public static RecyclerView rv;
 
     public static Cursor cursor;
-    ContentValues newVal = new ContentValues();
 
     public void onCreate(Bundle savedInstanceStace) {
         super.onCreate(savedInstanceStace);
@@ -92,9 +91,7 @@ public class SLFragment extends Fragment {
                 if(ed.length() != 0) {
                     int p = getItemPosition(str, -1);
                     if(p == -1) {
-                        // TODO: also if item is not already in list (check with query or in cursor?)
-                        newVal.put("item", str);
-                        AppMain.getDb().insertItem( newVal);
+                        AppMain.getDb().insertItem(str);
                     } else {
                         rv.scrollToPosition(p);
                     }

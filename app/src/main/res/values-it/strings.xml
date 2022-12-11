@@ -5,6 +5,7 @@
     <string name="title_activity_settings">@string/settings</string>
     <string name="place_search_activity_label">Ricerca Negozi</string>
     <string name="new_card_activity_label">Nuova Carta Fedeltà</string>
+    <string name="edit_card_activity_label">Modifica Carta Fedeltà</string>
 
     <string name="settings">Impostazioni</string>
     <string name="allow">Consenti</string>
@@ -76,5 +77,6 @@
     <string name="preference_grant_permissions_summary">Alcuni permessi non sono ancora abilitati</string>
     <string name="preference_geofencing_summary">Questa funzionalità ti permette di ricevere una notifica contenente i primi articoli della tua lista tutte le volte che andrai a fare la spesa nei tuoi negozi di fiducia</string>
     <string name="preference_geofencing_header">Notifica In Negozio</string>
+    <string name="preference_geofencing_note">NOTA: in alcuni dispositivi le politiche di gestione energetica potrebbero limitare questa funzionalità e dunque la notifica potrebbe non essere tempestiva</string>
     <!--  -->
 </resources>
